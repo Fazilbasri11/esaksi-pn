@@ -11,6 +11,14 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        strictPort: true,
+        https: true,  // **Pastikan Vite pakai HTTPS**
+        hmr: {
+            host: 'e-saksi.jasakode.com'
+        }
+    },
+    base: process.env.APP_URL + "/build/",
     css: {
         preprocessorOptions: {
             scss: {
