@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PihakMenghadirkanController;
 use App\Http\Controllers\AgendaSaksiPidanaController;
 use App\Http\Controllers\AgendaBiasaController;
+use App\Http\Controllers\RiwayatPerkaraController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,11 +40,7 @@ Route::get('/riwayat-perkara', function () {
 
 
 
-// use App\Models\Perkara;
-
-
-
-
+ // 
 
 
 Route::middleware('auth')->group(function () {
@@ -62,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'add'])->name('pihak-menghadirkan.form');
     Route::delete('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'destroy'])->name('pihak-menghadirkan.form');
 
+    // Riwayat Perkara
+    Route::get('/riwayat-perkara', [RiwayatPerkaraController::class, 'index'])->name('riwayat-perkara');
 
 });
 

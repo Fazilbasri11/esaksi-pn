@@ -13,12 +13,9 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Perkara;
 use App\Models\PihakMenghadirkan;
 
-
-
-class AgendaSaksiPidanaController extends Controller {
-    
+class RiwayatPerkaraController extends Controller {
     public function index() {
-        $perkaras = Perkara::all();
+        $perkaras = Perkara::where("status", false)->get();
         foreach ($perkaras as $key => $perkara) {
             $maxIndex = PihakMenghadirkan::where("no_perkara", $perkara->no)->max('index');
             $pihakMenghadirkanArray = collect();
@@ -28,6 +25,7 @@ class AgendaSaksiPidanaController extends Controller {
                 $pihakTurutTergugat = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "turut_tergugat")->where("index", $i)->first();
                 $pihakPemohon = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "pemohon")->where("index", $i)->first();
                 $pihakTermohon = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "termohon")->where("index", $i)->first();
+
                 $pihakMenghadirkan = [
                     "tergugat"=> $pihakTergugat,
                     "penggugat"=> $pihakPenggugat,
@@ -36,7 +34,6 @@ class AgendaSaksiPidanaController extends Controller {
                     "termohon"=> $pihakTermohon,
                     "maxIndex"=> $maxIndex,
                 ];
-
                 $pihakMenghadirkanArray->push($pihakMenghadirkan);
             }
             $perkaras[$key]->pihak_menghadirkan = $pihakMenghadirkanArray->toArray(); // Tambahkan ke objek
@@ -44,10 +41,9 @@ class AgendaSaksiPidanaController extends Controller {
 
         $data = [
             "perkaras" => $perkaras,
-            'title' => 'Agenda Saksi Perdata',
         ];
     
-        return view('agenda-saksi-perdata.index', $data);
+        return view('riwayat-perkara.index', $data);
     }
 
 

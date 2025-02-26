@@ -21,7 +21,7 @@ class DashboardController extends Controller {
     public function index() {
         $data = [
             'title' => 'Dashboard',
-            'perkaras' => Perkara::all(),
+            'perkaras' => Perkara::where("status", true)->get(),
         ];
     
         return view('dashboard', $data);
@@ -40,7 +40,6 @@ class DashboardController extends Controller {
         $jenis = $request->input('jenis'); // Ambil data dari input form
         $no = $request->input('no');
         $status = $request->input('status') == "1";
-
 
         $perkara = [
             "jenis" => $jenis,

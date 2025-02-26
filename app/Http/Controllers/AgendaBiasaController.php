@@ -15,8 +15,10 @@ use App\Models\Perkara;
 class AgendaBiasaController extends Controller  {
 
     public function index() {
+        $perkaras = Perkara::all();
         $data = [
             'title' => 'Agenda Biasa',
+            "perkaras" => $perkaras,
         ];
         return view('agenda-biasa.index', $data);
     }

@@ -1,18 +1,22 @@
+<x-app-layout>
+    <div class="py-2 md:py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-<x-user-layout>
-    <section class="mx-auto w-full lg:max-w-[70%] py-8">
-        
-      
-      @if (!isset($perkaras) || $perkaras->isEmpty())
+            <div class="flex flex-col gap-2 px-2">
+                <div class="text-[1.6rem] font-bold">Riwayat Perkara</div>
+                <div>Riwayat Perkara yang telah ada atau berlalu. <br>Ini menampung semua data riwayat perkara yang telah selesai atau tidak aktif.</div>
+            </div>
+
+            @if (!isset($perkaras) || $perkaras->isEmpty())
                 <div class="alert alert-warning">Not Found</div>
             @else
                 <section class="flex flex-col gap-4">
-                @foreach ($perkaras as $index => $perkara)              
+                @foreach ($perkaras as $index => $perkara)
                 <div class="bg-gray-200 px-4 py-4">
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <div class="mb-2 text-[1.1rem]">No Perkara : <span class="font-bold">{{ $perkara->no }}</span></div>
-                        <div>
-                            <div>Status Perkara</div>
+                        <div class="max-w-[300px]">
+                            <label for="status" class="form-label">Status Perkara</label>
                             <div class="flex items-center">
                                 @if ($perkara->status == 1)
                                     <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
@@ -108,10 +112,10 @@
                     
 
                 </div>
-
                 @endforeach
                 </section>
             @endif
 
-    </section>
-</x-user-layout>
+        </div>
+    </div>
+</x-app-layout>

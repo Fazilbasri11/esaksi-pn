@@ -19,7 +19,7 @@ class PihakMenghadirkanController extends Controller {
     // API Method
 
     public function index() {
-        $perkaras = Perkara::all();
+        $perkaras = Perkara::where("status", true)->get();
 
 
         foreach ($perkaras as $key => $perkara) {
