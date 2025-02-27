@@ -47,7 +47,7 @@ class AgendaSaksiPidanaController extends Controller {
             'title' => 'Agenda Saksi Perdata',
         ];
     
-        return view('agenda-saksi-perdata.index', $data);
+        return view('agenda-saksi-pidana.index', $data);
     }
 
 

@@ -90,7 +90,6 @@
                                         </th>
                                         <td class="px-6 py-4">
                                             {{ ucfirst($pihak->pihak) }} 
-                                            {{ $pihak->index }}
                                         </td>
                                         <td class="px-6 py-4">
                                             <span>

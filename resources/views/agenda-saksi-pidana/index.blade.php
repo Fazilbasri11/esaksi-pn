@@ -1,60 +1,19 @@
-
 <x-user-layout>
     <section class="mx-auto w-full lg:max-w-[70%] py-8" x-data='{ form: false }'>
-        
-        <h1>Agenda Biasa</h1>
+
+        <h1>Agenda Saksi Pidana</h1>
         <p class="text-[1.1rem] lg:max-w-[700px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus culpa repudiandae amet tempora, nisi facere ipsum modi nostrum inventore debitis?</p>
-      
+
         <nav class="flex items-center justify-end mb-4">
             <button type="button" class="btn btn-primary" @click="form=true">Hadiri Agenda</button>
         </nav>
-
-        <div class="relative overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Jenis Perkara
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            No Perkara
-                        </th>
-                        <th scope="col" class="px-6 py-3" align="right">
-                            Aksi
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                @if (isset($perkaras) && $perkaras)
-                @foreach ($perkaras as $index => $perkara)
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td class="px-6 py-4">
-                        {{ ucfirst($perkara["jenis"]) }}
-                    </td>
-                    <td class="px-6 py-4 font-bold">
-                        <span class="font-bold">{{ $perkara["no"] }}</span>
-                    </td>
-                    <td class="px-6 py-4" align="right" width="250px">
-                        <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            Hadiri Perkara
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-                @else
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td colspan="3">
-                    <div>
-                        Not Found
-                    </div>
-                    </td>
-                </tr>
-                @endif
-                </tbody>
-            </table>
+            
+    
+        <div class="alert alert-warning">
+            Tidak Ada Agenda Yang Di temukan
         </div>
- 
-        
+
+
         <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20" x-show="form" x-transition>
             <div class="px-4 py-8 w-[60%]" @click.outside="form=false">
                 <div class="grid gap-6 md:grid-cols-3">
@@ -151,7 +110,7 @@
                 </div>
             </div>
         </div>
-
+        
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const dateInput = document.getElementById('myDate');
@@ -163,6 +122,6 @@
                 dateInput.value = `${yyyy}-${mm}-${dd}`;
             });
         </script>
-        
+
     </section>
 </x-user-layout>

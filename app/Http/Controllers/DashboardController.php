@@ -33,36 +33,39 @@ class DashboardController extends Controller {
     public function createPerkara(Request $request): RedirectResponse
     {
         
-        // return response()->json([
-        //     'message' => 'Perkara berhasil dibuat',
-        //     'data' => Perkara::all(),
-        // ]);
-        $jenis = $request->input('jenis'); // Ambil data dari input form
-        $no = $request->input('no');
-        $status = $request->input('status') == "1";
+        $validated = $request->validate([
+            'jenis' => 'required|string',
+            'no' => ['required', 'regex:/^[\pL\pN\s\-\/().]+$/u', 'unique:perkaras,no'],
+        ]);
+    
+        try {
+            Perkara::create([
+                "jenis" => $validated['jenis'],
+                "no" => $validated['no'],
+                "status" => true,
+            ]);
+    
+            return redirect()->back()->with('success', 'Perkara berhasil disimpan.');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
 
-        $perkara = [
-            "jenis" => $jenis,
-            "no" => $no,
-            "status" => $status,
-        ];
-
-        
-
-        $perkara = Perkara::create([
-            "jenis" => $jenis,
-            "no" => $no,
-            "status" => $status,
-        ]); 
-
-        return redirect('/dashboard');
         // return response()->json([
         //     'message' => 'Perkara berhasil dibuat',
         //     'data' => $perkara,
         // ]);
-    
     }
 
+    public function disable($id)
+    {
+        $perkara = Perkara::findOrFail($id);
+        $perkara->update(['status' => false]); // Ubah status menjadi nonaktif
+
+        return redirect()->back()->with('success', 'Perkara berhasil dinonaktifkan.');
+    }
+    
 
     /**
      * Remove Perkara
@@ -85,14 +88,12 @@ class DashboardController extends Controller {
         $request->validate([
             'jenis' => 'required|string',
             'no' => 'required|string',
-            'status' => 'required|boolean',
         ]);
 
         $perkara = Perkara::findOrFail($id);
         $perkara->update([
             'jenis' => $request->jenis,
             'no' => $request->no,
-            'status' => $request->status,
         ]);
 
         return redirect()->route('perkara.edit', $id)->with('success', 'Perkara berhasil diperbarui!');

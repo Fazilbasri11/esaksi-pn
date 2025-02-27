@@ -85,9 +85,9 @@ server {
     root /var/www/service.jasakode.com/html;
     index index.html;
 
-    # location / {
-    #    try_files $uri $uri/ =404;
-    # }
+    location / {
+       try_files $uri $uri/ =404;
+    }
 
     add_header Server 'jasakode-service/0.1.0' always;
 

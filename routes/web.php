@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PihakMenghadirkanController;
 use App\Http\Controllers\AgendaSaksiPidanaController;
+use App\Http\Controllers\AgendaSaksiPerdataController;
 use App\Http\Controllers\AgendaBiasaController;
 use App\Http\Controllers\RiwayatPerkaraController;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +25,10 @@ Route::get('/', function () {
 });
 
 
-Route::get('/agenda-saksi-perdata', [AgendaSaksiPidanaController::class, 'index'])->name('agenda-saksi-perdata');
+Route::get('/agenda-saksi-perdata', [AgendaSaksiPerdataController::class, 'index'])->name('agenda-saksi-perdata');
+
+Route::get('/agenda-saksi-pidana', [AgendaSaksiPidanaController::class, 'index'])->name('agenda-saksi-pidana');
+
 
 Route::get('/agenda-biasa', [AgendaBiasaController::class, 'index'])->name('agenda-biasa');
 
@@ -51,7 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/perkara', [DashboardController::class, 'createPerkara'])->name('perkara-create');
     Route::delete('/perkara/{id}', [DashboardController::class, 'removePerkara'])->name('perkara.remove');
     Route::get('/perkara/{id}/edit', [DashboardController::class, 'editPerkara'])->name('perkara.edit');
-    Route::put('/perkara/{id}', [DashboardController::class, 'updatePerkara'])->name('perkara.update');
+    Route::patch('/perkara/{id}', [DashboardController::class, 'updatePerkara'])->name('perkara.update');
+    Route::patch('/perkara/disable/{id}', [DashboardController::class, 'disable'])->name('perkara.disable');
 
     Route::get('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'form'])->name('pihak-menghadirkan.form');
 
