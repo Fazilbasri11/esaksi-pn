@@ -6,8 +6,10 @@ use App\Http\Controllers\PihakMenghadirkanController;
 use App\Http\Controllers\AgendaSaksiPidanaController;
 use App\Http\Controllers\AgendaSaksiPerdataController;
 use App\Http\Controllers\AgendaBiasaController;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\RiwayatPerkaraController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,9 +22,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
+Route::get('/', [WelcomeController::class, "index"])->name('welcome');;
 
 
 Route::get('/agenda-saksi-perdata', [AgendaSaksiPerdataController::class, 'index'])->name('agenda-saksi-perdata');

@@ -13,6 +13,10 @@
         </div>
     @endif
 
+<section x-data="{ saksi_perdata: false, saksi_pidana: false, agenda_biasa: false }">
+     
+
+
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-success px-3 h-24">
         <a class="navbar-brand fw-bold text-white flex items-center justify-center gap-2" href="/">
@@ -27,6 +31,9 @@
         </a>
     </nav>
 
+
+
+
     <section class="container my-5 min-h-screen">
         <h1 class="text-center mb-2">Selamat Data Di E-Saksi</h1>
         <p class="text-center mb-8">Silahkan Pilih Agenda</p>
@@ -37,7 +44,7 @@
                     Jadwal dan informasi terkait kehadiran saksi dalam proses perkara perdata, termasuk waktu, lokasi, serta pihak-pihak yang terlibat.
                 </p>
                 <div class="flex items-center justify-center mt-auto">
-                    <a href="/agenda-saksi-perdata" class="btn btn-success">Detail Agenda</a>
+                    <a @click="saksi_perdata=true" class="btn btn-success">Hadiri Agenda</a>
                 </div>
             </div>
             <div class="shadow-xl px-4 py-4 border border-gray-200/10 rounded-md flex flex-col h-full">
@@ -46,7 +53,7 @@
                     Jadwal dan rincian kehadiran saksi dalam proses perkara pidana, mencakup waktu, lokasi, serta pihak yang terlibat dalam persidangan atau penyelidikan.
                 </p>
                 <div class="flex items-center justify-center mt-auto">
-                    <a href="/agenda-saksi-pidana" class="btn btn-success">Detail Agenda</a>
+                    <button @click="saksi_pidana=true" class="btn btn-success">Detail Agenda</button>
                 </div>
             </div>
             <div class="shadow-xl px-4 py-4 border border-gray-200/10 rounded-md flex flex-col h-full">
@@ -55,7 +62,7 @@
                     Jadwal kegiatan rutin atau pertemuan yang telah direncanakan, mencakup waktu, tempat, dan agenda yang akan dibahas.
                 </p>
                 <div class="flex items-center justify-center mt-auto">
-                    <a href="/agenda-biasa" class="btn btn-success">Detail Agenda</a>
+                    <button @click="agenda_biasa=true" class="btn btn-success">Detail Agenda</button>
                 </div>
             </div>
         </section>
@@ -65,4 +72,256 @@
         <p class="m-0">Copyright &copy; 2025 <a target="__blank" class="hover:text-blue-800 text-inherit no-underline" href="https://e-saksi.jasakode.com">E-saksi</a>. All rights reserved.</p>
     </footer>
 
+
+ 
+
+
+    <!-- Saksi Perdata -->
+    <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="saksi_perdata" x-transition>
+        <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="saksi_perdata=false">
+            <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Saksi Perdata</h2>
+            <form action="#" method="POST" x-data="{ jenis: '', pihak: '' }" class="flex flex-col gap-3">
+                <div>
+                    <label for="jenis_pidana" class="flex mb-0.5">Jenis Pidana</label>
+                    <select class="custom-select w-full" id="jenis_pidana" x-model="jenis">
+                        <option selected hidden value="">Pilih Jenis Pidana</option>
+                        <option value="perdata">Perdata</option>
+                        <option value="pidana">Pidana</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
+                    <select class="custom-select w-full" id="no_perkara" x-model="no_perkara">
+                        <option selected hidden>Pilih Nomor Perkara</option>
+                            @if (isset($perkaras) && $perkaras)
+                                @foreach ($perkaras as $index => $perkara)
+                                    <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
+                                @endforeach
+                            @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="pihak" class="flex mb-0.5">Pihak</label>
+                    <select class="custom-select w-full" id="pihak" x-model="pihak">
+                        <option selected value="saksi">Saksi</option>
+                        <option value="ahli">Ahli</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nama Ahli' : 'Nama Saksi'">Nama</label>
+                    <input
+                        type="text"
+                        placeholder="Nama"
+                        class="w-full p-2 rounded focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nomor Telepon Ahli' : 'Nomor Telepon Saksi'">Nama</label>
+                    <input
+                        type="text"
+                        x-bind:placeholder="pihak=='ahli' ? 'Nomor Telepon Ahli' : 'Nomor Telepon Saksi'"
+                        class="w-full p-2 rounded focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label for="tanggal" class="flex mb-0.5">Tanggal</label>
+                    <input
+                        id="tanggal"
+                        type="date"
+                        class="w-full p-2 rounded focus:outline-none"
+                        disabled
+                    />
+                </div>
+                <nav class="flex flex-wrap items-center gap-2 justify-end mt-8">
+                    <button @click="saksi_perdata=false" type="reset" type="button" class="btn btn-outline-danger">Batal</button>
+                    <button
+                        type="submit"
+                        class="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
+                    >
+                        Hadiri Agenda
+                    </button>
+                </nav>
+            </form>
+        </div>
+    </section>
+
+    <!-- Saksi Pidana -->
+    <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="saksi_pidana" x-transition>
+        <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="saksi_pidana=false">
+            <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Saksi Pidana</h2>
+            <form action="#" method="POST" x-data="{ jenis: '', pihak: '' }" class="flex flex-col gap-3">
+                <div>
+                    <label for="jenis_pidana" class="flex mb-0.5">Jenis Pidana</label>
+                    <select class="custom-select w-full" id="jenis_pidana" x-model="jenis">
+                        <option selected hidden value="">Pilih Jenis Pidana</option>
+                        <option value="perdata">Perdata</option>
+                        <option value="pidana">Pidana</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
+                    <select class="custom-select w-full" id="no_perkara" x-model="no_perkara">
+                        <option selected hidden>Pilih Nomor Perkara</option>
+                            @if (isset($perkaras) && $perkaras)
+                                @foreach ($perkaras as $index => $perkara)
+                                    <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
+                                @endforeach
+                            @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="pihak" class="flex mb-0.5">Pihak</label>
+                    <select class="custom-select w-full" id="pihak" x-model="pihak">
+                        <option selected value="saksi">Saksi</option>
+                        <option value="ahli">Ahli</option>
+                    </select>
+                </div>
+                <!-- <div x-show="pihak=='badan_hukum'">
+                    <label for="badan_hukum" class="flex mb-0.5">Nama Badan Hukum</label>
+                    <input class="w-full" id="badan_hukum" type="text" placeholder="Masukan nama badan">
+                </div> -->
+                <div>
+                    <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nama Ahli' : 'Nama Saksi'">Nama</label>
+                    <input
+                        type="text"
+                        placeholder="Nama"
+                        class="w-full p-2 rounded focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nomor Telepon Ahli' : 'Nomor Telepon Saksi'">Nama</label>
+                    <input
+                        type="text"
+                        x-bind:placeholder="pihak=='ahli' ? 'Nomor Telepon Ahli' : 'Nomor Telepon Saksi'"
+                        class="w-full p-2 rounded focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label for="tanggal" class="flex mb-0.5">Tanggal</label>
+                    <input
+                        id="tanggal"
+                        type="date"
+                        class="w-full p-2 rounded focus:outline-none"
+                        disabled
+                    />
+                </div>
+
+                
+
+                <nav class="flex flex-wrap items-center gap-2 justify-end mt-8">
+                    <button @click="saksi_pidana=false" type="reset" type="button" class="btn btn-outline-danger">Batal</button>
+                    <button
+                        type="submit"
+                        class="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
+                    >
+                        Hadiri Agenda
+                    </button>
+                </nav>
+            </form>
+        </div>
+    </section>
+
+    <!-- Agenda Biasa -->
+    <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="agenda_biasa" x-transition>
+        <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="agenda_biasa=false">
+            <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Agenda Biasa</h2>
+            <form action="#" method="POST" x-data="{ jenis: '', pihak: '' }" class="flex flex-col gap-3">
+                <div>
+                    <label for="jenis_pidana" class="flex mb-0.5">Jenis Pidana</label>
+                    <select class="custom-select w-full" id="jenis_pidana" x-model="jenis">
+                        <option selected hidden value="">Pilih Jenis Pidana</option>
+                        <option value="perdata">Perdata</option>
+                        <option value="pidana">Pidana</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
+                    <select class="custom-select w-full" id="no_perkara" x-model="no_perkara">
+                        <option selected hidden>Pilih Nomor Perkara</option>
+                            @if (isset($perkaras) && $perkaras)
+                                @foreach ($perkaras as $index => $perkara)
+                                    <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
+                                @endforeach
+                            @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="pihak" class="flex mb-0.5">Pihak</label>
+                    <select class="custom-select w-full" id="pihak" x-model="pihak">
+                        <option selected hidden>Pilih Pihak</option>
+                        <option value="perorangan">Perorangan</option>
+                        <option value="badan_hukum">Badan Hukum</option>
+                        <option value="pengacara">Pengacara</option>
+                    </select>
+                </div>
+                <div x-show="pihak=='badan_hukum'">
+                    <label for="badan_hukum" class="flex mb-0.5">Nama Badan Hukum</label>
+                    <input class="w-full" id="badan_hukum" type="text" placeholder="Masukan nama badan">
+                </div>
+                <div>
+                    <label for="nama" class="flex mb-0.5">Nama</label>
+                    <input
+                        id="nama"
+                        type="text"
+                        placeholder="Nama..."
+                        class="w-full p-2 rounded focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label for="nomor_telepon" class="flex mb-0.5">Nomor Telepon</label>
+                    <input
+                        id="nomor_telepon"
+                        type="text"
+                        placeholder="0812..."
+                        class="w-full p-2 rounded focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label for="tanggal_agenda_biasa" class="flex mb-0.5">Tanggal</label>
+                    <input
+                        id="tanggal_agenda_biasa"
+                        type="date"
+                        class="w-full p-2 rounded focus:outline-none"
+                        disabled
+                    />
+                </div>
+
+                
+
+                <nav class="flex flex-wrap items-center gap-2 justify-end mt-8">
+                    <button @click="agenda_biasa=false" type="reset" type="button" class="btn btn-outline-danger">Batal</button>
+                    <button
+                        type="submit"
+                        class="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
+                    >
+                        Hadiri Agenda
+                    </button>
+                </nav>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('tanggal_agenda_biasa');
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            // Format ISO untuk input type="date"
+            dateInput.value = `${yyyy}-${mm}-${dd}`;
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('tanggal');
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            // Format ISO untuk input type="date"
+            dateInput.value = `${yyyy}-${mm}-${dd}`;
+        });
+    </script>
+
+
+</section>
 </x-guest-layout>

@@ -1,11 +1,12 @@
 <x-user-layout>
-    <section class="mx-auto w-full lg:max-w-[70%] py-8" x-data='{ form: false }'>
+    <section class="mx-auto w-full lg:max-w-[70%] py-8 px-3" x-data='{ form: false }'>
 
         <h1>Agenda Saksi Pidana</h1>
         <p class="text-[1.1rem] lg:max-w-[700px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus culpa repudiandae amet tempora, nisi facere ipsum modi nostrum inventore debitis?</p>
 
-        <nav class="flex items-center justify-end mb-4">
-            <button type="button" class="btn btn-primary" @click="form=true">Hadiri Agenda</button>
+        <nav class="flex items-center justify-between mb-4">
+            <a type="button" class="btn btn-secondary font-bold" href="/">Home</a>
+            <button type="button" class="btn btn-success font-bold" @click="form=true">Hadiri Agenda</button>
         </nav>
             
     

@@ -91,6 +91,12 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('pihak-menghadirkan')" :active="request()->routeIs('pihak-menghadirkan')">
+                {{ __('Pihak Menghadirkan') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('riwayat-perkara')" :active="request()->routeIs('riwayat-perkara')">
+                {{ __('Riwayat Perkara') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-2 md:py-12">
+    <div class="py-12 px-3">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <div class="flex flex-col gap-2 px-2">
