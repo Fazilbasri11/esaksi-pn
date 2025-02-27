@@ -48,9 +48,7 @@
             <button type="button" class="btn btn-success" @click="create=true">Buat Perkara</button>
         </nav>
 
-        
 
-        
         
 
         <!-- DATA -->
@@ -77,17 +75,28 @@
                                             <td>Status</td>
                                             <td class="pl-3">
                                                 <span>:</span>
-                                                <select name="" id="" value="$perkara->status == 1">
+                                                <!-- <select name="" id="" value="$perkara->status == 1">
                                                     <option value="true" selected>Active</option>
                                                     <option value="false">NonActive</option>
-                                                </select>
+                                                </select> -->
+                                                @if($perkara->status == 1)
+                                                <div class="inline-flex items-center ms-2">
+                                                    <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2 inline-flex"></div>
+                                                    <span class="text-green-700">Aktif</span>
+                                                </div>
+                                                @else
+                                                <div class="inline-flex items-center ms-2">
+                                                    <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2 inline-flex"></div>
+                                                    <span class="text-red-700">Tidak Aktif</span>
+                                                </div>
+                                                @endif
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <nav class="flex md:justify-end gap-2">
                                     <div class="inline-flex h-11 items-center justify-center">
-                                        <button type="button" @click="edit={{$perkara}}" class="btn btn-success" title="Delete">Edit</button>
+                                        <button type="button" @click="edit={{$perkara}}" class="btn btn-warning" title="Delete">Edit</button>
                                     </div>
                                     <div class="inline-flex h-11 items-center justify-center">
                                         <button type="button" class="btn btn-danger" title="Delete" @click="remove={{ $perkara['id'] }}">
@@ -101,13 +110,22 @@
                                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                         <tr>
                                             <th scope="col" class="px-6 py-3">
-                                                Jenis Perkara
+                                                Penggugat
                                             </th>
                                             <th scope="col" class="px-6 py-3">
-                                                Nomor Perkara
+                                                Jumlah Saksi Penggugat
                                             </th>
                                             <th scope="col" class="px-6 py-3">
-                                                Status Perkara
+                                                Tergugat
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Jumlah Saksi Tergugat
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Turut Tergugat
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Jumlah Saksi Turut Tergugat
                                             </th>
                                             <th scope="col" class="px-6 py-3" align="right">
                                                 <div class="flex gap-2 items-center justify-end">
@@ -117,8 +135,58 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    @if (isset($perkara['pihak']) && count($perkara['pihak']) > 0)
+                                    @foreach ($perkara['pihak'] as $index => $pihak)
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                                        <td class="px-6 py-3">
+                                            @if (isset($pihak['penggugat']) && $pihak['penggugat'])
+                                                <span>{{ $pihak["penggugat"]["nama"] }}</span>
+                                               <span>(Penggugat {{ $index + 1 }})</span>
+                                               <span>(Hadir)</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            @if (isset($pihak['penggugat']) && $pihak['penggugat'])
+                                                <span>{{ count($pihak["penggugat"]["saksi"]) }}</span>
+                                                <span>dari {{ $pihak["penggugat"]["jumlah_saksi"] }} akan hadir</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            @if (isset($pihak['tergugat']) && $pihak['tergugat'])
+                                                <span>{{ $pihak["tergugat"]["nama"] }}</span>
+                                               <span>(Tergugat {{ $index + 1 }})</span>
+                                               <span>(Hadir)</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            @if (isset($pihak['tergugat']) && $pihak['tergugat'])
+                                                <span>{{ count($pihak["tergugat"]["saksi"]) }}</span>
+                                                <span>dari {{ $pihak["tergugat"]["jumlah_saksi"] }} akan hadir</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            @if (isset($pihak['turut_tergugat']) && $pihak['turut_tergugat'])
+                                                <span>{{ $pihak["turut_tergugat"]["nama"] }}</span>
+                                               <span>(Turut Tergugat {{ $index + 1 }})</span>
+                                               <span>(Hadir)</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            @if (isset($pihak['turut_tergugat']) && $pihak['turut_tergugat'])
+                                                <span>{{ count($pihak["turut_tergugat"]["saksi"]) }}</span>
+                                                <span>dari {{ $pihak["turut_tergugat"]["jumlah_saksi"] }} akan hadir</span>
+                                            @endif
+                                        </td>
+                                        <td scope="col" class="px-6 py-3" align="right">
+                                            <div class="flex gap-2 items-center justify-end">
+                                                <a href="#">Detail</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                    @else
                                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                            <th colspan="4">
+                                            <th colspan="7">
                                                 <div class="flex flex-col items-center justify-center w-full py-10">
                                                     <div class="flex items-center justify-center mb-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 1024 1024">
@@ -131,6 +199,7 @@
                                                 </div>
                                             </th>
                                         </tr>
+                                    @endif
                                     </tbody>
                                 </table>
                             </div>

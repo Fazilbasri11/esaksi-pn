@@ -12,12 +12,11 @@ use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use App\Models\Perkara;
 use App\Models\PihakMenghadirkan;
-
+use App\Models\Saksi;
 
 class WelcomeController extends Controller {
 
-    public function index() {
-        $perkaras = Perkara::where("status", true)->get();
+    public function index(Request $request) {
         // foreach ($perkaras as $key => $perkara) {
         //     $maxIndex = PihakMenghadirkan::where("no_perkara", $perkara->no)->max('index');
         //     $pihakMenghadirkanArray = collect();
@@ -41,28 +40,60 @@ class WelcomeController extends Controller {
         //     $perkaras[$key]->pihak_menghadirkan = $pihakMenghadirkanArray->toArray(); // Tambahkan ke objek
         // }
 
+       
+        $jenisPidana = $request->query('jenis_pidana') ?? "";
+        $perkaras = Perkara::where("status", true)->get();
+    
+        if ($jenisPidana == "perdata" || $jenisPidana == "pidana") {
+            session()->put('agenda', $jenisPidana);
+            $perkaras = Perkara::where("status", true)->where("jenis", $jenisPidana)->get();
+        }
+    
         $data = [
             "perkaras" => $perkaras,
         ];
         return view('welcome', $data);
     }
 
-    public function createSaksiPerdata(Request $request): JsonResponse {
-        // $validated = $request->validate([
-        //     'jenis' => 'required|string',
-        //     'no' => ['required', 'regex:/^[\pL\pN\s\-\/().]+$/u', 'unique:perkaras,no'],
-        // ]);
-
+    public function createSaksiPerdata(Request $request): RedirectResponse {
         $body = $request->all();
+        try {
+            Saksi::create($body);
+            return redirect()->back()->with('success', 'Data berhasil disimpan.');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 
-        $data = [
-            "jenis_pidana" => $body["jenis_pidana"],
-        ];
+    public function saksiDestroy($id): RedirectResponse {
+        $perkara = Saksi::findOrFail($id);
+        $perkara->delete();
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
+    }
 
-        return response()->json([
-            'message' => 'Berhasil Menambahkan Data',
-            "data" => $body,
-        ]);
+    public function findPerkara(Request $request) : JsonResponse {
+        $jenisPidana = $request->query('jenis_pidana') ?? "";
+      
+        if ($jenisPidana == "perdata" || $jenisPidana == "pidana") {
+            $perkaras = Perkara::where("status", true)->where("jenis", $jenisPidana)->get();
+            return response()->json($perkaras);
+        }
+
+        $perkaras = Perkara::where("status", true)->get();
+        return response()->json($perkaras);
     }
 
 }
+
+
+// $table->enum('agenda', ['perdata', 'biasa']);
+//             $table->enum('jenis_pidana', ['perdata', 'pidana']);
+//             $table->string('no_perkara');
+//             $table->enum('pihak_menghadirkan', ['tergugat', 'penggugat', 'turut_tergugat', 'pemohon', 'termohon']);
+//             $table->enum('pihak', ['saksi', 'ahli', 'perorangan','badan_hukum','pengacara']);
+//             $table->string('nama_badan_hukum')->nullable()->default("");
+//             $table->string('nama')->nullable()->default("");
+//             $table->string('nomor_telepon');
+//             $table->string('tanggal');

@@ -11,16 +11,16 @@ use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use App\Models\PihakMenghadirkan;
 use App\Models\Perkara;
-
+use Illuminate\Support\Facades\Validator;
+use App\Models\Saksi;
 
 
 class PihakMenghadirkanController extends Controller {
 
-    // API Method
-
     public function index() {
         $perkaras = Perkara::where("status", true)->get();
-
+        $pihaks = PihakMenghadirkan::all();
+        $saksis = Saksi::all();
 
         // foreach ($perkaras as $key => $perkara) {
         //     $maxIndex = PihakMenghadirkan::where("no_perkara", $perkara->no)->max('index');
@@ -51,11 +51,12 @@ class PihakMenghadirkanController extends Controller {
 
         $data = [
             "perkaras" => $perkaras,
+            "pihaks" => $pihaks,
+            "saksis" => $saksis,
         ];
 
         return view('pihak-menghadirkan.index', $data);
     }
-
 
     public function form(Request $request) {
         $no_perkara = $request->query('perkara'); 
@@ -72,72 +73,65 @@ class PihakMenghadirkanController extends Controller {
         return view('pihak-menghadirkan.form', $data);
     }
 
-
-    public function add(Request $request): JsonResponse {
+    public function add(Request $request): RedirectResponse {
         $body = $request->all();
+        $form = [
+            "no_perkara"=> $body["no_perkara"],
+            "jenis_perdata" => $body["jenis_perdata"],
+            "pihak" => $body["pihak"],
+            "nama" => $body["nama"],
+            "no_telp" => $body["nomor_telepon"],
+            "jumlah_saksi" => $body["jumlah_saksi"] ?? 0,
+        ];
+        try {
+            PihakMenghadirkan::create($form);
+    
+            return redirect()->back()->with('success', 'Data berhasil disimpan.');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
 
 
-        $data = [
-            "data"=> $body,
+        // return response()->json($form, 200);
+    }
+
+    public function destroy($id): RedirectResponse {
+        $perkara = PihakMenghadirkan::findOrFail($id);
+        $perkara->delete();
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
+    }
+    
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'jenis_perdata' => 'required|string',
+            'pihak' => 'required|string',
+            'nama' => 'required|string|max:255',
+            'nomor_telepon' => 'required|string|max:15',
+            'jumlah_saksi' => 'nullable|integer|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $body = $request->all();
+        $form = [
+            "jenis_perdata" => $body["jenis_perdata"],
+            "pihak" => $body["pihak"],
+            "nama" => $body["nama"],
+            "no_telp" => $body["nomor_telepon"],
+            "jumlah_saksi" => $body["jumlah_saksi"] ?? 0,
         ];
 
-        // "jenis_perdata": "gugatan_sederhana",
-        // "pihak": "turut_tergugat",
-        // "nama": "Lela",
-        // "nomor_telepon": "08123456789",
-        // "jumlah_saksi": "1"
+        $data = PihakMenghadirkan::findOrFail($id);
+        $data->update($form);
 
-        return response()->json($data, 200);
-        // $no_perkara = $request->query('perkara') ?? ""; 
-    
-
-        // $jenis_perdata = $request->input('jenis_perdata'); 
-        // $pihak = $request->input('pihak'); 
-        // $nama = $request->input('name'); 
-        // $no_telp = $request->input('phone'); 
-        // $jumlah_saksi = $request->input('jumlah_saksi') ?? 0; 
-        // $index = $request->input('index') ?? 1; 
-        
-        // // Cek apakah kombinasi jenis_perdata, pihak, dan index sudah ada
-        // $exists = PihakMenghadirkan::where([
-        //     'jenis_perdata' => $jenis_perdata,
-        //     'pihak' => $pihak,
-        //     'index' => $index
-        // ])->exists();
-
-        // if ($exists) {
-        //     return redirect()->back()->withErrors('Data sudah ada!');
-        // }
-
-        // $data = [
-        //     "no_perkara" => $no_perkara,
-        //     "jenis_perdata" => $jenis_perdata,
-        //     "pihak" => $pihak,
-        //     "nama" => $nama,
-        //     "no_telp" => $no_telp,
-        //     "jumlah_saksi" => $jumlah_saksi,
-        //     "index"=> $index,
-        // ];
-
-        // $pihak = PihakMenghadirkan::create($data);
-    
-        // return response()->json($data, 200);
-
-        // return redirect("/pihak-menghadirkan/form" . ($no_perkara !== "" ? "?perkara={$no_perkara}" : ""));
-
+        return redirect()->back()->with('success', 'Data berhasil diperbarui.');
     }
 
-    public function destroy(Request $request) {
-        $id = $request->input('id');
-        PihakMenghadirkan::destroy($id); // Hapus berdasarkan ID
-        return redirect()->back()->with('success', 'Data deleted successfully.');
-    }
-    
 
 }
 
-
-/**
- * 
- * jenis perdata
- */

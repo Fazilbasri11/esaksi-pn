@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->enum('pihak', ['tergugat', 'penggugat', 'turut_tergugat', 'pemohon', 'termohon']);
             $table->string('nama');
             $table->string('no_telp');
-            $table->string('no_perkara');
+            $table->string('no_perkara')->nullable()->default("");
             $table->integer('index')->nullable(); // Tambahkan setelah kolom 'no'
             $table->integer('jumlah_saksi')->default(0);
             $table->timestamps();

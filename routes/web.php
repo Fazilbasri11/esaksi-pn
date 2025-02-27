@@ -65,18 +65,26 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/pihak-menghadirkan', [PihakMenghadirkanController::class, "index"])->name('pihak-menghadirkan');
     Route::post('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'add'])->name('pihak-menghadirkan.form');
-    Route::delete('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'destroy'])->name('pihak-menghadirkan.form');
+    Route::delete('/pihak-menghadirkan/{id}', [PihakMenghadirkanController::class, 'destroy'])->name('pihak-menghadirkan.remove');
+    Route::patch('/pihak-menghadirkan/{id}', [PihakMenghadirkanController::class, 'update'])->name('pihak-menghadirkan.update');
 
     // Riwayat Perkara
     Route::get('/riwayat-perkara', [RiwayatPerkaraController::class, 'index'])->name('riwayat-perkara');
 
+    Route::delete('/saksi/{id}', [WelcomeController::class, 'saksiDestroy'])->name('saksi.remove');
+
 });
 
+
+// Routers For API No Auth
+Route::get('/api/v1/perkara', [WelcomeController::class, 'findPerkara']);
 
 // Routers For API
 Route::middleware('auth')->group(function () {
     // Mendapatkan Semua Data Perkara
-    Route::get('/api/v1/perkara', [ProfileController::class, 'edit']);
+    // Route::get('/api/v1/perkara', [ProfileController::class, 'edit']);
 });
+
+
 
 require __DIR__.'/auth.php';
