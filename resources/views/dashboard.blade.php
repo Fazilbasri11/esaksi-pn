@@ -35,7 +35,7 @@
 @enderror
 
 
-    <section class="mx-auto w-full lg:max-w-[70%] py-8 px-3" x-data="{ create: false, edit: null }">
+    <section class="mx-auto w-full lg:max-w-[70%] py-8 px-3" x-data="{ create: false, edit: null, form_pihak: false, remove: 0 }">
 
 
         <h1>Dashboard</h1>
@@ -43,12 +43,118 @@
             Selamat data di E-Saksi Platform Penjadwalan Agenda Sidang.
         </p>
 
-        <nav class="flex items-center justify-end mb-4">
+        <nav class="flex items-center justify-end mb-4 gap-2">
+            <!-- <button type="button" class="btn btn-info" @click="form_pihak=true">Tambah Pihak</button> -->
             <button type="button" class="btn btn-success" @click="create=true">Buat Perkara</button>
         </nav>
 
+        
+
+        
+        
+
+        <!-- DATA -->
+        <section>
+            <div class="font-bold text-[1.4rem] mb-2">
+                Data Perkara
+            </div>
+            <div>
+                @if (isset($perkaras) && count($perkaras) > 0)
+                <div class="flex flex-col gap-4">
+                    @foreach ($perkaras as $index => $perkara)
+                        <div class="shadow-lg bg-white px-3 py-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
+                                <table class="mb-4">
+                                    <tbody>
+                                        <tr>
+                                            <td>Nomor Perkara</td>
+                                            <td class="pl-3">
+                                                <span>:</span>
+                                                <b>{{ $perkara["no"] }}</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status</td>
+                                            <td class="pl-3">
+                                                <span>:</span>
+                                                <select name="" id="" value="$perkara->status == 1">
+                                                    <option value="true" selected>Active</option>
+                                                    <option value="false">NonActive</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <nav class="flex md:justify-end gap-2">
+                                    <div class="inline-flex h-11 items-center justify-center">
+                                        <button type="button" @click="edit={{$perkara}}" class="btn btn-success" title="Delete">Edit</button>
+                                    </div>
+                                    <div class="inline-flex h-11 items-center justify-center">
+                                        <button type="button" class="btn btn-danger" title="Delete" @click="remove={{ $perkara['id'] }}">
+                                            Hapus Perkara
+                                        </button>
+                                    </div>
+                                </nav>
+                            </div>
+                            <div class="relative overflow-x-auto">
+                                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Jenis Perkara
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Nomor Perkara
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Status Perkara
+                                            </th>
+                                            <th scope="col" class="px-6 py-3" align="right">
+                                                <div class="flex gap-2 items-center justify-end">
+                                                    Aksi
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                                            <th colspan="4">
+                                                <div class="flex flex-col items-center justify-center w-full py-10">
+                                                    <div class="flex items-center justify-center mb-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 1024 1024">
+                                                            <path fill="currentColor" d="M1022.98 509.984L905.475 102.895c-3.84-13.872-16.464-23.472-30.848-23.472H139.283c-14.496 0-27.184 9.744-30.944 23.777L.947 489.552c-1.984 7.504-1.009 15.007 1.999 21.536C1.218 516.88.003 522.912.003 529.264v351.312c0 35.343 28.656 64 64 64h896c35.343 0 64-28.657 64-64V529.264c0-1.712-.369-3.329-.496-5.008c.832-4.592.816-9.44-.527-14.272m-859.078-366.56l686.369-.001l93.12 321.84H645.055c-1.44 76.816-55.904 129.681-133.057 129.681s-130.624-52.88-132.064-129.68H74.158zm796.097 737.151H64.001V529.263h263.12c27.936 80.432 95.775 129.68 184.879 129.68s157.936-49.248 185.871-129.68h262.128z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="text-[1.1rem]">
+                                                        Tidak Ada Data
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="flex flex-col items-center justify-center w-full py-10">
+                    <div class="flex items-center justify-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 1024 1024">
+                            <path fill="currentColor" d="M1022.98 509.984L905.475 102.895c-3.84-13.872-16.464-23.472-30.848-23.472H139.283c-14.496 0-27.184 9.744-30.944 23.777L.947 489.552c-1.984 7.504-1.009 15.007 1.999 21.536C1.218 516.88.003 522.912.003 529.264v351.312c0 35.343 28.656 64 64 64h896c35.343 0 64-28.657 64-64V529.264c0-1.712-.369-3.329-.496-5.008c.832-4.592.816-9.44-.527-14.272m-859.078-366.56l686.369-.001l93.12 321.84H645.055c-1.44 76.816-55.904 129.681-133.057 129.681s-130.624-52.88-132.064-129.68H74.158zm796.097 737.151H64.001V529.263h263.12c27.936 80.432 95.775 129.68 184.879 129.68s157.936-49.248 185.871-129.68h262.128z"/>
+                        </svg>
+                    </div>
+                    <div class="text-[1.1rem]">
+                        Tidak Ada Perkara
+                    </div>
+                </div>
+                @endif
+            </div>
+        </section>
+
+
         <!-- Create Dialog -->
-        <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20 z-10" x-show="create" x-transition>
+        <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20 z-10" x-show="create" :class="{ 'hidden': !create }" x-transition>
             <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl max-h-min" @click.outside="create=false">
                 <p class="font-bold text-[1.4rem]">Buat Perkara Baru</p>
                 <form action="/perkara" method="POST" 
@@ -95,7 +201,7 @@
 
         <!-- Edit Dialog -->
         <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20 z-10" 
-            x-show="edit" x-transition>
+             x-show="edit" :class="{ 'hidden': !edit }" x-transition>
             <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl max-h-min" 
                 @click.outside="edit=null">
                 <p class="font-bold text-[1.4rem]">Edit Perkara</p>
@@ -144,84 +250,106 @@
                 </form>
             </div>
         </div>
-        
-        <section>
-            <div class="font-bold text-[1.4rem] mb-2"> 
-                Perkara
+
+        <!-- Delete Dialog -->
+        <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20 z-10" 
+             x-show="remove > 0" :class="{ 'hidden': remove == 0 }" x-transition>
+            <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl max-h-min" 
+                @click.outside="remove=0">
+                <p class="font-bold text-[1.4rem]">Hapus Perkara</p>
+                <form x-bind:action="`{{ route('perkara.remove', '') }}/${remove || 0}`" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <section class="mb-4">
+                        Apakah Kamu Yakin ingin menghapus Perkara?
+                        <br>
+                        Perkara Yang telah di hapus secara permanen tidak dapat di kembalikan lagi.
+                    </section>
+                    <nav class="mt-4 flex flex-wrap gap-2 items-center justify-end">
+                        <button type="reset" @click="remove=0" class="btn btn-outline-success">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Hapus Permanen</button>
+                    </nav>
+                </form>
             </div>
-            <div class="relative overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">
-                                Jenis Perkara
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Nomor Perkara
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Status Perkara
-                            </th>
-                            <th scope="col" class="px-6 py-3" align="right">
-                                <div class="flex gap-2 items-center justify-end">
-                                    Aksi
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (isset($perkaras) && $perkaras)
-                            @foreach ($perkaras as $index => $perkara)
-                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ ucfirst($perkara["jenis"]) }}
-                                </th>
-                                <td class="px-6 py-4">
-                                    <b>{{ $perkara["no"] }}</b>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        @if ($perkara->status == 1)
-                                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
-                                            <span class="text-green-700">Aktif</span>
-                                        @else
-                                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div>
-                                            <span class="text-red-700">Tidak Aktif</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4" align="right" width="270px">
-                                    <div class="flex gap-2 items-center justify-end">
-                                        <button type="button" @click="edit={{$perkara}}" class="btn btn-success" title="Delete">Edit</button>
-                                        <form class="inline-flex" action="{{ route('perkara.remove', $perkara->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" title="Delete">Delete</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        @else
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                            <th colspan="4">
-                                <div class="flex flex-col items-center justify-center w-full py-10">
-                                    <div class="flex items-center justify-center mb-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 1024 1024">
-                                            <path fill="currentColor" d="M1022.98 509.984L905.475 102.895c-3.84-13.872-16.464-23.472-30.848-23.472H139.283c-14.496 0-27.184 9.744-30.944 23.777L.947 489.552c-1.984 7.504-1.009 15.007 1.999 21.536C1.218 516.88.003 522.912.003 529.264v351.312c0 35.343 28.656 64 64 64h896c35.343 0 64-28.657 64-64V529.264c0-1.712-.369-3.329-.496-5.008c.832-4.592.816-9.44-.527-14.272m-859.078-366.56l686.369-.001l93.12 321.84H645.055c-1.44 76.816-55.904 129.681-133.057 129.681s-130.624-52.88-132.064-129.68H74.158zm796.097 737.151H64.001V529.263h263.12c27.936 80.432 95.775 129.68 184.879 129.68s157.936-49.248 185.871-129.68h262.128z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="text-[1.1rem]">
-                                        Data Not Found
-                                    </div>
-                                </div>
-                            </th>
-                        </tr>
-                        @endif
-                    </tbody>
-                </table>
+        </div>
+
+        <!-- Form Pihak -->
+        <!-- <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="form_pihak" :class="{ 'hidden': !form_pihak }" x-transition>
+            <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="form_pihak=false">
+                <h2 class="text-2xl font-semibold mb-4">Tambah Pihak Menghadirkan</h2>
+                <form action="#" method="POST" x-data="{ jenis: '', pihak: '', jenis_perdata: '' }" class="flex flex-col gap-3">
+                    <div>
+                        <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
+                        <select class="custom-select w-full" id="no_perkara" x-model="no_perkara">
+                            <option selected hidden>Pilih Nomor Perkara</option>
+                                @if (isset($perkaras) && $perkaras)
+                                    @foreach ($perkaras as $index => $perkara)
+                                        <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
+                                    @endforeach
+                                @endif
+                        </select>
+                    </div>
+                    <div>
+                        <label for="jenis_perdata" class="flex mb-0.5">Jenis Jenis Perdata</label>
+                        <select class="custom-select w-full" id="jenis_perdata" x-model="jenis_perdata">
+                            <option selected hidden value="">Pilih Jenis Perdata</option>
+                            <option value="gugatan">Gugatan</option>
+                            <option value="gugatan_sederhana">Gugatan Sederhana</option>
+                            <option value="permohonan">Permohonan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="pihak" class="flex mb-0.5">Jenis Pihak</label>
+                        <select class="custom-select w-full" id="pihak" name="pihak" x-model="pihak">
+                            <option selected hidden value="">Pilih Pihak Menghadirkan</option>
+                            <option value="tergugat">Tergugat</option>
+                            <option value="penggugat">Penggugat</option>
+                            <option value="turut_tergugat">Turut Tergugat</option>
+                            <option value="pemohon">Pemohon</option>
+                            <option value="termohon">Termohon</option>
+                        </select>
+                    </div>        
+                    <div>
+                        <label for="nama" class="flex mb-0.5">Nama</label>
+                        <input
+                            id="nama"
+                            type="text"
+                            placeholder="Nama..."
+                            class="w-full p-2 rounded focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label for="nomor_telepon" class="flex mb-0.5">Nomor Telepon</label>
+                        <input
+                            id="nomor_telepon"
+                            type="text"
+                            placeholder="0812..."
+                            class="w-full p-2 rounded focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label for="jumlah_saksi_ahli" class="flex mb-0.5">Jumlah Saksi/Ahli</label>
+                        <input
+                            id="jumlah_saksi_ahli"
+                            type="number"
+                            placeholder="0"
+                            class="w-full p-2 rounded focus:outline-none"
+                        />
+                    </div>
+                    <nav class="flex flex-wrap items-center gap-2 justify-end mt-8">
+                        <button @click="form_pihak=false" type="reset" type="button" class="btn btn-outline-danger">Batal</button>
+                        <button
+                            type="submit"
+                            class="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
+                        >
+                            Simapan
+                        </button>
+                    </nav>
+                </form>
             </div>
-        </section>
+        </section> -->
+
+
 
     </section>
 </x-app-layout>

@@ -1,6 +1,19 @@
 
 <x-app-layout>
-    <div class="py-12 px-3">
+    <section class="mx-auto w-full lg:max-w-[70%] py-8 px-3" 
+        x-data="{ create: false }"
+    >
+
+        <h1>Pihak Menghadirkan</h1>
+        <p class="text-[1.1rem] lg:max-w-[700px]">
+            Selamat data di E-Saksi Platform Penjadwalan Agenda Sidang.
+        </p>
+
+        <nav class="flex items-center justify-end mb-4 gap-2">
+            <button type="button" class="btn btn-success" @click="create=true">Tambah Pihak</button>
+        </nav>
+
+
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <nav class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -133,5 +146,99 @@
        
   
         </div>
-    </div>
+
+
+        <!-- Create Dialog -->
+        <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20 z-10" x-show="create" :class="{ 'hidden': !create }" x-transition>
+            <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl max-h-min" @click.outside="create=false">
+                <p class="font-bold text-[1.4rem]">Tambah Pihak Baru</p>
+                <form action="{{ route('pihak-menghadirkan.form') }}" method="POST"
+                    x-data="{ jenis_perdata: '', pihak: '', nama: '', nomor_telepon: '', errors: {}, submitForm() { 
+                        this.errors = {};
+                        if (!this.jenis_perdata) this.errors.jenis_perdata = 'Silahkan Pilih Jenis Perdata Terlebih Dahulu.'; 
+                        if (!this.pihak) this.errors.pihak = 'Silahkan Pilih Pihak Terlebih Dahulu.'; 
+                        if (!this.nama) this.errors.nama = 'Silahkan Masukan Nama.'; 
+                        if (!this.nomor_telepon) this.errors.nomor_telepon = 'Silahkan Masukan Nomor Telepon.'; 
+
+                        if (Object.keys(this.errors).length === 0) { 
+                            this.$nextTick(() => this.$el.submit()); 
+                        }
+                    }}" 
+                    x-on:submit.prevent="submitForm()"
+                >
+                    @csrf
+                    <section class="flex flex-col gap-3">
+                        <div>
+                            <label for="jenis_perdata" class="flex mb-0.5">Jenis Perdata</label>
+                            <template x-if="errors?.jenis_perdata">
+                                <p class="text-red-500 text-sm mb-1" x-text="errors.jenis_perdata"></p>
+                            </template>
+                            <select class="custom-select w-full" id="jenis_perdata" name="jenis_perdata" x-model="jenis_perdata">
+                                <option selected hidden>Pilih Jenis Perdata...</option>
+                                <option value="gugatan">Gugatan</option> 
+                                <option value="gugatan_sederhana">Gugatan Sederhana</option> 
+                                <option value="permohonan">Permohonan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="pihak" class="flex mb-0.5">Pihak</label>
+                            <template x-if="errors?.pihak">
+                                <p class="text-red-500 text-sm mb-1" x-text="errors.pihak"></p>
+                            </template>
+                            <select class="custom-select w-full" id="pihak" name="pihak" x-model="pihak">
+                                <option selected hidden value="">Pilih Pihak...</option>
+                                <option value="tergugat">Tergugat</option>
+                                <option value="penggugat">Penggugat</option>
+                                <option value="turut_tergugat">Turut Tergugat</option>
+                                <option value="pemohon">Pemohon</option>
+                                <option value="termohon">Termohon</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="nama" class="flex mb-0.5">Nama</label>
+                            <template x-if="errors?.nama">
+                                <p class="text-red-500 text-sm mb-1" x-text="errors.nama"></p>
+                            </template>
+                            <input
+                                x-model="nama"
+                                name="nama"
+                                id="nama"
+                                type="text"
+                                placeholder="Nama..."
+                                class="w-full p-2 rounded focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label for="nomor_telepon" class="flex mb-0.5">Nomor Telepon</label>
+                            <template x-if="errors?.nomor_telepon">
+                                <p class="text-red-500 text-sm mb-1" x-text="errors.nomor_telepon"></p>
+                            </template>
+                            <input
+                                name="nomor_telepon"
+                                x-model="nomor_telepon"
+                                id="nomor_telepon"
+                                type="text"
+                                placeholder="0812..."
+                                class="w-full p-2 rounded focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label for="jumlah_saksi" class="flex mb-0.5">Jumlah Saksi/Ahli</label>
+                            <input
+                                name="jumlah_saksi"
+                                id="jumlah_saksi"
+                                type="number"
+                                placeholder="0"
+                                class="w-full p-2 rounded focus:outline-none"
+                            />
+                        </div>
+                    </section>
+                    <nav class="mt-4 flex flex-wrap gap-2 items-center justify-end">
+                        <button type="reset" @click="create=false;errors={}" class="btn btn-outline-danger">Cancel</button>
+                        <button type="submit" class="btn btn-success">Simpan</button>
+                    </nav>
+                </form>
+            </div>
+        </div>
+    </section>
 </x-app-layout>

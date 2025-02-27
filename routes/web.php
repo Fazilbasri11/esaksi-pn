@@ -63,8 +63,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/perkara/{id}', [DashboardController::class, 'updatePerkara'])->name('perkara.update');
     Route::patch('/perkara/disable/{id}', [DashboardController::class, 'disable'])->name('perkara.disable');
 
-    Route::get('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'form'])->name('pihak-menghadirkan.form');
-
     Route::get('/pihak-menghadirkan', [PihakMenghadirkanController::class, "index"])->name('pihak-menghadirkan');
     Route::post('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'add'])->name('pihak-menghadirkan.form');
     Route::delete('/pihak-menghadirkan/form', [PihakMenghadirkanController::class, 'destroy'])->name('pihak-menghadirkan.form');
