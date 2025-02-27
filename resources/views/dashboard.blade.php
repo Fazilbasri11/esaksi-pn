@@ -35,7 +35,7 @@
 @enderror
 
 
-    <section class="mx-auto w-full lg:max-w-[70%] py-8 px-3" x-data="{ create: false, edit: null, form_pihak: false, remove: 0 }">
+    <section class="mx-auto w-full lg:max-w-[70%] py-8 px-3" x-data="{ create: false, edit: null, form_pihak: false, remove: 0, show_detail: false, detail: 0 }">
 
 
         <h1>Dashboard</h1>
@@ -179,7 +179,7 @@
                                         </td>
                                         <td scope="col" class="px-6 py-3" align="right">
                                             <div class="flex gap-2 items-center justify-end">
-                                                <a href="#">Detail</a>
+                                                <button type="button"  @click="detail = JSON.parse(atob('{{ base64_encode(json_encode($pihak)) }}'))" class="btn btn-outline-primary">Detail</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -341,6 +341,259 @@
                 </form>
             </div>
         </div>
+
+      
+        <!-- Detail Dialog -->
+        <div class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 pt-20 z-10" 
+             x-show="detail && detail !== null" :class="{ 'hidden': !detail }" x-transition>
+            <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl max-h-min" 
+                @click.outside="detail=null">
+                <p class="font-bold text-[1.4rem]">Detail Kehadiran</p>
+                <section>
+                    <div>
+                        <section class="mb-4" x-show="detail.penggugat">
+                            <div class="mb-2 text-[1.1rem]">Saski/Ahli Penggugat <b x-text="detail.penggugat.nama"></b></div>
+                            <div class="relative overflow-x-auto">
+                                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak Menghadirkan
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nama
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nomor Telepon
+                                        </th>
+                                        <th scope="col" class="px-6 py-3" align="right">
+                                            <div class="flex gap-2 items-center justify-end">
+                                                Aksi
+                                            </div>
+                                        </th>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="item in detail.penggugat.saksi">
+                                            <tr>
+                                                <td class="px-6 py-3" x-text="item.pihak_menghadirkan"></td>
+                                                <td class="px-6 py-3" x-text="item.pihak"></td>
+                                                <td class="px-6 py-3" x-text="item.nama_badan_hukum || item.nama"></td>
+                                                <td class="px-6 py-3" x-text="item.nomor_telepon"></td>
+                                                <td scope="col" class="px-6 py-3" align="right">
+                                                    <div class="flex gap-2 items-center justify-end">
+                                                        <form :action="'/saksi/' + item.id" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-outline-danger" @click="confirm('Yakin ingin menghapus?') || event.preventDefault()">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="mb-4" x-show="detail.tergugat">
+                            <div class="mb-2 text-[1.1rem]">Saski/Ahli Tergugat <b x-text="detail.tergugat.nama"></b></div>
+                            <div class="relative overflow-x-auto">
+                                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak Menghadirkan
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nama
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nomor Telepon
+                                        </th>
+                                        <th scope="col" class="px-6 py-3" align="right">
+                                            <div class="flex gap-2 items-center justify-end">
+                                                Aksi
+                                            </div>
+                                        </th>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="item in detail.tergugat.saksi">
+                                            <tr>
+                                                <td class="px-6 py-3" x-text="item.pihak_menghadirkan"></td>
+                                                <td class="px-6 py-3" x-text="item.pihak"></td>
+                                                <td class="px-6 py-3" x-text="item.nama_badan_hukum || item.nama"></td>
+                                                <td class="px-6 py-3" x-text="item.nomor_telepon"></td>
+                                                <td scope="col" class="px-6 py-3" align="right">
+                                                    <div class="flex gap-2 items-center justify-end">
+                                                        <form :action="'/saksi/' + item.id" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-outline-danger" @click="confirm('Yakin ingin menghapus?') || event.preventDefault()">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="mb-4" x-show="detail.turut_tergugat">
+                            <div class="mb-2 text-[1.1rem]">Saski/Ahli Turut Tergugat <b x-text="detail.turut_tergugat.nama"></b></div>
+                            <div class="relative overflow-x-auto">
+                                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak Menghadirkan
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nama
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nomor Telepon
+                                        </th>
+                                        <th scope="col" class="px-6 py-3" align="right">
+                                            <div class="flex gap-2 items-center justify-end">
+                                                Aksi
+                                            </div>
+                                        </th>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="item in detail.turut_tergugat.saksi">
+                                            <tr>
+                                                <td class="px-6 py-3" x-text="item.pihak_menghadirkan"></td>
+                                                <td class="px-6 py-3" x-text="item.pihak"></td>
+                                                <td class="px-6 py-3" x-text="item.nama_badan_hukum || item.nama"></td>
+                                                <td class="px-6 py-3" x-text="item.nomor_telepon"></td>
+                                                <td scope="col" class="px-6 py-3" align="right">
+                                                    <div class="flex gap-2 items-center justify-end">
+                                                        <form :action="'/saksi/' + item.id" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-outline-danger" @click="confirm('Yakin ingin menghapus?') || event.preventDefault()">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="mb-4" x-show="detail.pemohon">
+                            <div class="mb-2 text-[1.1rem]">Saski/Ahli Turut Tergugat <b x-text="detail.pemohon.nama"></b></div>
+                            <div class="relative overflow-x-auto">
+                                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak Menghadirkan
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nama
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nomor Telepon
+                                        </th>
+                                        <th scope="col" class="px-6 py-3" align="right">
+                                            <div class="flex gap-2 items-center justify-end">
+                                                Aksi
+                                            </div>
+                                        </th>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="item in detail.pemohon.saksi">
+                                            <tr>
+                                                <td class="px-6 py-3" x-text="item.pihak_menghadirkan"></td>
+                                                <td class="px-6 py-3" x-text="item.pihak"></td>
+                                                <td class="px-6 py-3" x-text="item.nama_badan_hukum || item.nama"></td>
+                                                <td class="px-6 py-3" x-text="item.nomor_telepon"></td>
+                                                <td scope="col" class="px-6 py-3" align="right">
+                                                    <div class="flex gap-2 items-center justify-end">
+                                                        <form :action="'/saksi/' + item.id" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-outline-danger" @click="confirm('Yakin ingin menghapus?') || event.preventDefault()">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="mb-4" x-show="detail.termohon">
+                            <div class="mb-2 text-[1.1rem]">Saski/Ahli Turut Tergugat <b x-text="detail.termohon.nama"></b></div>
+                            <div class="relative overflow-x-auto">
+                                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak Menghadirkan
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Pihak
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nama
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Nomor Telepon
+                                        </th>
+                                        <th scope="col" class="px-6 py-3" align="right">
+                                            <div class="flex gap-2 items-center justify-end">
+                                                Aksi
+                                            </div>
+                                        </th>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="item in detail.termohon.saksi">
+                                            <tr>
+                                                <td class="px-6 py-3" x-text="item.pihak_menghadirkan"></td>
+                                                <td class="px-6 py-3" x-text="item.pihak"></td>
+                                                <td class="px-6 py-3" x-text="item.nama_badan_hukum || item.nama"></td>
+                                                <td class="px-6 py-3" x-text="item.nomor_telepon"></td>
+                                                <td scope="col" class="px-6 py-3" align="right">
+                                                    <div class="flex gap-2 items-center justify-end">
+                                                        <form :action="'/saksi/' + item.id" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-outline-danger" @click="confirm('Yakin ingin menghapus?') || event.preventDefault()">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+                <nav class="mt-4 flex flex-wrap gap-2 items-center justify-end">
+                    <button type="reset" @click="detail=null" class="btn btn-outline-danger">Close</button>
+                </nav>
+            </div>
+        </div>
+
 
         <!-- Form Pihak -->
         <!-- <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="form_pihak" :class="{ 'hidden': !form_pihak }" x-transition>

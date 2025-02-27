@@ -87,13 +87,3 @@ class WelcomeController extends Controller {
 
 }
 
-
-// $table->enum('agenda', ['perdata', 'biasa']);
-//             $table->enum('jenis_pidana', ['perdata', 'pidana']);
-//             $table->string('no_perkara');
-//             $table->enum('pihak_menghadirkan', ['tergugat', 'penggugat', 'turut_tergugat', 'pemohon', 'termohon']);
-//             $table->enum('pihak', ['saksi', 'ahli', 'perorangan','badan_hukum','pengacara']);
-//             $table->string('nama_badan_hukum')->nullable()->default("");
-//             $table->string('nama')->nullable()->default("");
-//             $table->string('nomor_telepon');
-//             $table->string('tanggal');
