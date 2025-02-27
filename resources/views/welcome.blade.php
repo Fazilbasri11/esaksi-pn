@@ -13,7 +13,20 @@
         </div>
     @endif
 
-<section x-data="{ saksi_perdata: false, saksi_pidana: false, agenda_biasa: false }">
+<section 
+    x-data="{ 
+        saksi_perdata: false, 
+        saksi_pidana: false, 
+        agenda_biasa: false,
+        date_now: (() => {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            return `${yyyy}-${mm}-${dd}`
+        })(),
+    }"
+>
      
 
 
@@ -80,10 +93,11 @@
     <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="saksi_perdata" x-transition>
         <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="saksi_perdata=false">
             <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Saksi Perdata</h2>
-            <form action="#" method="POST" x-data="{ jenis: '', pihak: '' }" class="flex flex-col gap-3">
+            <form action="{{ route('saksi-perdata.add') }}" method="POST" x-data="{ jenis: '', pihak: '' }" class="flex flex-col gap-3">
+                @csrf
                 <div>
                     <label for="jenis_pidana" class="flex mb-0.5">Jenis Pidana</label>
-                    <select class="custom-select w-full" id="jenis_pidana" x-model="jenis">
+                    <select class="custom-select w-full" id="jenis_pidana" name="jenis_pidana" x-model="jenis">
                         <option selected hidden value="">Pilih Jenis Pidana</option>
                         <option value="perdata">Perdata</option>
                         <option value="pidana">Pidana</option>
@@ -91,7 +105,7 @@
                 </div>
                 <div>
                     <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
-                    <select class="custom-select w-full" id="no_perkara" x-model="no_perkara">
+                    <select class="custom-select w-full" id="no_perkara" name="no_perkara" x-model="no_perkara">
                         <option selected hidden>Pilih Nomor Perkara</option>
                             @if (isset($perkaras) && $perkaras)
                                 @foreach ($perkaras as $index => $perkara)
@@ -102,34 +116,37 @@
                 </div>
                 <div>
                     <label for="pihak" class="flex mb-0.5">Pihak</label>
-                    <select class="custom-select w-full" id="pihak" x-model="pihak">
+                    <select class="custom-select w-full" id="pihak" name="pihak" x-model="pihak">
                         <option selected value="saksi">Saksi</option>
                         <option value="ahli">Ahli</option>
                     </select>
                 </div>
                 <div>
-                    <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nama Ahli' : 'Nama Saksi'">Nama</label>
+                    <label for="nama">Nama</label>
                     <input
+                        name="nama"
                         type="text"
                         placeholder="Nama"
                         class="w-full p-2 rounded focus:outline-none"
                     />
                 </div>
                 <div>
-                    <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nomor Telepon Ahli' : 'Nomor Telepon Saksi'">Nama</label>
+                    <label for="nomor_telepon" class="flex mb-0.5">Nomor Telepon</label>
                     <input
+                        id="nomor_telepon"
+                        name="nomor_telepon"
                         type="text"
-                        x-bind:placeholder="pihak=='ahli' ? 'Nomor Telepon Ahli' : 'Nomor Telepon Saksi'"
+                        placeholder="Nomor Telepon..."
                         class="w-full p-2 rounded focus:outline-none"
                     />
                 </div>
                 <div>
                     <label for="tanggal" class="flex mb-0.5">Tanggal</label>
                     <input
-                        id="tanggal"
+                        x-model="date_now"
+                        name="tanggal"
                         type="date"
-                        class="w-full p-2 rounded focus:outline-none"
-                        disabled
+                        class="w-full p-2 rounded focus:outline-none tanggal"
                     />
                 </div>
                 <nav class="flex flex-wrap items-center gap-2 justify-end mt-8">
@@ -176,10 +193,6 @@
                         <option value="ahli">Ahli</option>
                     </select>
                 </div>
-                <!-- <div x-show="pihak=='badan_hukum'">
-                    <label for="badan_hukum" class="flex mb-0.5">Nama Badan Hukum</label>
-                    <input class="w-full" id="badan_hukum" type="text" placeholder="Masukan nama badan">
-                </div> -->
                 <div>
                     <label for="badan_hukum" class="flex mb-0.5" x-text="pihak=='ahli' ? 'Nama Ahli' : 'Nama Saksi'">Nama</label>
                     <input
@@ -199,9 +212,16 @@
                 <div>
                     <label for="tanggal" class="flex mb-0.5">Tanggal</label>
                     <input
-                        id="tanggal"
+                        x-model="(() => {
+                            const today = new Date();
+                            const dd = String(today.getDate()).padStart(2, '0');
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            const yyyy = today.getFullYear();
+                            return `${yyyy}-${mm}-${dd}`
+                        })()"
+                        name="tanggal"
                         type="date"
-                        class="w-full p-2 rounded focus:outline-none"
+                        class="w-full p-2 rounded focus:outline-none tanggal"
                         disabled
                     />
                 </div>
@@ -277,11 +297,18 @@
                     />
                 </div>
                 <div>
-                    <label for="tanggal_agenda_biasa" class="flex mb-0.5">Tanggal</label>
+                    <label for="tanggal" class="flex mb-0.5">Tanggal</label>
                     <input
-                        id="tanggal_agenda_biasa"
+                        x-model="(() => {
+                            const today = new Date();
+                            const dd = String(today.getDate()).padStart(2, '0');
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            const yyyy = today.getFullYear();
+                            return `${yyyy}-${mm}-${dd}`
+                        })()"
+                        name="tanggal"
                         type="date"
-                        class="w-full p-2 rounded focus:outline-none"
+                        class="w-full p-2 rounded focus:outline-none tanggal"
                         disabled
                     />
                 </div>
@@ -300,28 +327,6 @@
             </form>
         </div>
     </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dateInput = document.getElementById('tanggal_agenda_biasa');
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const yyyy = today.getFullYear();
-            // Format ISO untuk input type="date"
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const dateInput = document.getElementById('tanggal');
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const yyyy = today.getFullYear();
-            // Format ISO untuk input type="date"
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
-        });
-    </script>
-
 
 </section>
 </x-guest-layout>

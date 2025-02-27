@@ -47,4 +47,22 @@ class WelcomeController extends Controller {
         return view('welcome', $data);
     }
 
+    public function createSaksiPerdata(Request $request): JsonResponse {
+        // $validated = $request->validate([
+        //     'jenis' => 'required|string',
+        //     'no' => ['required', 'regex:/^[\pL\pN\s\-\/().]+$/u', 'unique:perkaras,no'],
+        // ]);
+
+        $body = $request->all();
+
+        $data = [
+            "jenis_pidana" => $body["jenis_pidana"],
+        ];
+
+        return response()->json([
+            'message' => 'Berhasil Menambahkan Data',
+            "data" => $body,
+        ]);
+    }
+
 }

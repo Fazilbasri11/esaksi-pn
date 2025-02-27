@@ -24,7 +24,10 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/', [WelcomeController::class, "index"])->name('welcome');;
+
+Route::get('/', [WelcomeController::class, "index"])->name('welcome');
+
+Route::post('/saksi-perdata/add', [WelcomeController::class, "createSaksiPerdata"])->name('saksi-perdata.add');;
 
 
 Route::get('/agenda-saksi-perdata', [AgendaSaksiPerdataController::class, 'index'])->name('agenda-saksi-perdata');
