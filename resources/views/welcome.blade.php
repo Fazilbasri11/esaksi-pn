@@ -52,7 +52,7 @@
         <p class="text-center mb-8">Silahkan Pilih Agenda</p>
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 sm:gap-2 xs:gap-2 lg:gap-8 xl:gap-8 2xl:gap-8">
             <div class="shadow-xl px-4 py-4 border border-gray-200/10 rounded-md flex flex-col h-full">
-                <h5 class="card-title fw-semibold text-center mb-4">Agenda Saksi Perdata</h5>
+                <h5 class="card-title fw-semibold text-center mb-4">Agenda Saksi Perdata atau Pidana</h5>
                 <p class="card-text text-center mb-4 flex-grow">
                     Jadwal dan informasi terkait kehadiran saksi dalam proses perkara perdata, termasuk waktu, lokasi, serta pihak-pihak yang terlibat.
                 </p>
@@ -60,7 +60,7 @@
                     <a @click="saksi_perdata=true" class="btn btn-success">Hadiri Agenda</a>
                 </div>
             </div>
-            <div class="shadow-xl px-4 py-4 border border-gray-200/10 rounded-md flex flex-col h-full">
+            <div class="hidden shadow-xl px-4 py-4 border border-gray-200/10 rounded-md flex flex-col h-full">
                 <h5 class="card-title fw-semibold text-center mb-4">Agenda Saksi Pidana</h5>
                 <p class="card-text text-center mb-4 flex-grow">
                     Jadwal dan rincian kehadiran saksi dalam proses perkara pidana, mencakup waktu, lokasi, serta pihak yang terlibat dalam persidangan atau penyelidikan.
@@ -92,7 +92,7 @@
     <!-- Saksi Perdata -->
     <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="saksi_perdata" x-transition>
         <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="saksi_perdata=false">
-            <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Saksi Perdata</h2>
+            <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Saksi atau Ahli</h2>
             <form action="{{ route('saksi-perdata.add') }}" method="POST" x-data="{ jenis: '', pihak: '' }" class="flex flex-col gap-3">
                 @csrf
                 <div>
@@ -112,6 +112,17 @@
                                     <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
                                 @endforeach
                             @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="pihak_menghadirkan" class="flex mb-0.5">Jenis Pihak Menghadirkan</label>
+                    <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="jenis">
+                        <option selected hidden value="">Pilih Pihak Menghadirkan</option>
+                        <option value="tergugat">Tergugat</option>
+                        <option value="penggugat">Penggugat</option>
+                        <option value="turut_tergugat">Turut Tergugat</option>
+                        <option value="pemohon">Pemohon</option>
+                        <option value="termohon">Termohon</option>
                     </select>
                 </div>
                 <div>
@@ -184,6 +195,17 @@
                                     <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
                                 @endforeach
                             @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="pihak_menghadirkan" class="flex mb-0.5">Jenis Pihak Menghadirkan</label>
+                    <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="jenis">
+                        <option selected hidden value="">Pilih Pihak Menghadirkan</option>
+                        <option value="tergugat">Tergugat</option>
+                        <option value="penggugat">Penggugat</option>
+                        <option value="turut_tergugat">Turut Tergugat</option>
+                        <option value="pemohon">Pemohon</option>
+                        <option value="termohon">Termohon</option>
                     </select>
                 </div>
                 <div>
@@ -263,6 +285,17 @@
                                     <option value="{{ $perkara['no'] }}">{{ $perkara['no'] }}</option>   
                                 @endforeach
                             @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="pihak_menghadirkan" class="flex mb-0.5">Jenis Pihak Menghadirkan</label>
+                    <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="jenis">
+                        <option selected hidden value="">Pilih Pihak Menghadirkan</option>
+                        <option value="tergugat">Tergugat</option>
+                        <option value="penggugat">Penggugat</option>
+                        <option value="turut_tergugat">Turut Tergugat</option>
+                        <option value="pemohon">Pemohon</option>
+                        <option value="termohon">Termohon</option>
                     </select>
                 </div>
                 <div>
