@@ -26,30 +26,17 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [WelcomeController::class, "index"])->name('welcome');
-
 Route::post('/saksi-perdata/add', [WelcomeController::class, "createSaksiPerdata"])->name('saksi-perdata.add');;
-
-
 Route::get('/agenda-saksi-perdata', [AgendaSaksiPerdataController::class, 'index'])->name('agenda-saksi-perdata');
-
 Route::get('/agenda-saksi-pidana', [AgendaSaksiPidanaController::class, 'index'])->name('agenda-saksi-pidana');
-
-
 Route::get('/agenda-biasa', [AgendaBiasaController::class, 'index'])->name('agenda-biasa');
 
-
+Route::patch('/agenda-biasa/hadir/{id}', [WelcomeController::class, 'agendaBiasPihakHadir'])->name('agenda-biasa.hadir');
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/riwayat-perkara', function () { return view('riwayat-perkara'); })->middleware(['auth', 'verified'])->name('riwayat-perkara');
 
-Route::get('/riwayat-perkara', function () {
-    return view('riwayat-perkara');
-})->middleware(['auth', 'verified'])->name('riwayat-perkara');
-
-
-
-
- // 
 
 
 Route::middleware('auth')->group(function () {
@@ -78,6 +65,7 @@ Route::middleware('auth')->group(function () {
 
 // Routers For API No Auth
 Route::get('/api/v1/perkara', [WelcomeController::class, 'findPerkara']);
+Route::get('/api/v1/pihak', [WelcomeController::class, 'findPihak']);
 
 // Routers For API
 Route::middleware('auth')->group(function () {

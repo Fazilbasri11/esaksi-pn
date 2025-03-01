@@ -18,7 +18,7 @@ class PihakMenghadirkan extends Model
         'nama',
         'no_telp',
         'jumlah_saksi',
-        "index",
+        "hadir",
     ];
 }
 

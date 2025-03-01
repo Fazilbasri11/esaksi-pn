@@ -142,7 +142,11 @@
                                             @if (isset($pihak['penggugat']) && $pihak['penggugat'])
                                                 <span>{{ $pihak["penggugat"]["nama"] }}</span>
                                                <span>(Penggugat {{ $index + 1 }})</span>
-                                               <span>(Hadir)</span>
+                                               @if ($pihak['penggugat']['hadir'])
+                                                <span>(Hadir)</span>
+                                               @else
+                                                <span>(Belum Hadir)</span>
+                                               @endif
                                             @endif
                                         </td>
                                         <td class="px-6 py-3">
@@ -155,7 +159,11 @@
                                             @if (isset($pihak['tergugat']) && $pihak['tergugat'])
                                                 <span>{{ $pihak["tergugat"]["nama"] }}</span>
                                                <span>(Tergugat {{ $index + 1 }})</span>
-                                               <span>(Hadir)</span>
+                                               @if ($pihak['tergugat']['hadir'])
+                                                <span>(Hadir)</span>
+                                               @else
+                                                <span>(Belum Hadir)</span>
+                                               @endif
                                             @endif
                                         </td>
                                         <td class="px-6 py-3">

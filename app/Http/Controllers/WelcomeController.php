@@ -17,30 +17,6 @@ use App\Models\Saksi;
 class WelcomeController extends Controller {
 
     public function index(Request $request) {
-        // foreach ($perkaras as $key => $perkara) {
-        //     $maxIndex = PihakMenghadirkan::where("no_perkara", $perkara->no)->max('index');
-        //     $pihakMenghadirkanArray = collect();
-        //     for ($i = 1; $i <= $maxIndex; $i++) {
-        //         $pihakTergugat = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "tergugat")->where("index", $i)->first();
-        //         $pihakPenggugat = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "penggugat")->where("index", $i)->first();
-        //         $pihakTurutTergugat = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "turut_tergugat")->where("index", $i)->first();
-        //         $pihakPemohon = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "pemohon")->where("index", $i)->first();
-        //         $pihakTermohon = PihakMenghadirkan::where("no_perkara", $perkara->no)->where("pihak", "termohon")->where("index", $i)->first();
-
-        //         $pihakMenghadirkan = [
-        //             "tergugat"=> $pihakTergugat,
-        //             "penggugat"=> $pihakPenggugat,
-        //             "turut_tergugat"=> $pihakTurutTergugat,
-        //             "pemohon"=> $pihakPemohon,
-        //             "termohon"=> $pihakTermohon,
-        //             "maxIndex"=> $maxIndex,
-        //         ];
-        //         $pihakMenghadirkanArray->push($pihakMenghadirkan);
-        //     }
-        //     $perkaras[$key]->pihak_menghadirkan = $pihakMenghadirkanArray->toArray(); // Tambahkan ke objek
-        // }
-
-       
         $jenisPidana = $request->query('jenis_pidana') ?? "";
         $perkaras = Perkara::where("status", true)->get();
     
@@ -55,15 +31,38 @@ class WelcomeController extends Controller {
         return view('welcome', $data);
     }
 
-    public function createSaksiPerdata(Request $request): RedirectResponse {
-        $body = $request->all();
+    // public function createSaksiPerdata(Request $request): RedirectResponse {
+    //     $body = $request->all();
+    //     try {
+    //         Saksi::create($body);
+    //         return redirect()->back()->with('success', 'Data berhasil disimpan.');
+    //     } catch (ValidationException $e) {
+    //         return redirect()->back()->withErrors($e->errors())->withInput();
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     }
+    // }
+
+    public function createSaksiPerdata(Request $request): JsonResponse {
         try {
-            Saksi::create($body);
-            return redirect()->back()->with('success', 'Data berhasil disimpan.');
+            $body = $request->all();
+            $form = [];
+    
+            foreach ($body["rows"] as $row) {
+                $form[] = [
+                    'jenis_pidana' => $body["jenis_pidana"],
+                    'no_perkara'=> $body["no_perkara"],
+                    'pihak_menghadirkan'=> $body["pihak_menghadirkan"],
+                    'pihak'=> $body["pihak"],
+                    "tanggal"=> $body["tanggal"],
+                    'nama' => $row["nama"],
+                    'nomor_telepon' => $row["telepon"],
+                ];
+            }
+            Saksi::insert($form); // insert untuk multiple records
+            return response()->json($form, 200);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return response()->json(['errors' => $e->errors()], 422);
         }
     }
 
@@ -83,6 +82,30 @@ class WelcomeController extends Controller {
 
         $perkaras = Perkara::where("status", true)->get();
         return response()->json($perkaras);
+    }
+
+    public function findPihak(Request $request) : JsonResponse {
+        $jenisPerkara = $request->query('jenis_perkara') ?? "";
+        $noPerkara = $request->query('no_perkara') ?? "";
+      
+        if ($jenisPerkara != "" && $noPerkara != "") {
+            $pihaks = PihakMenghadirkan::where("no_perkara", $noPerkara)->where("hadir", false)->get();
+            // return response()->json([ "data:" => PihakMenghadirkan::all(),"pihaks" => $pihaks, "jenis_perkara" => $jenisPerkara, "no_perkara" => $noPerkara ]);
+            return response()->json($pihaks);
+        }
+
+        $pihaks = PihakMenghadirkan::all();
+        return response()->json($pihaks);
+    }
+
+    public function agendaBiasPihakHadir($id) {
+        try {
+            $pihak = PihakMenghadirkan::where("id", $id)->findOrFail($id);
+            $pihak->update(["hadir"=> true]);
+            return response()->json($pihak);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
     }
 
 }

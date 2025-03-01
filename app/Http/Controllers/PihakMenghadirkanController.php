@@ -13,6 +13,7 @@ use App\Models\PihakMenghadirkan;
 use App\Models\Perkara;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Saksi;
+use \Illuminate\Validation\ValidationException;
 
 
 class PihakMenghadirkanController extends Controller {
@@ -73,29 +74,105 @@ class PihakMenghadirkanController extends Controller {
         return view('pihak-menghadirkan.form', $data);
     }
 
-    public function add(Request $request): RedirectResponse {
-        $body = $request->all();
-        $form = [
-            "no_perkara"=> $body["no_perkara"],
-            "jenis_perdata" => $body["jenis_perdata"],
-            "pihak" => $body["pihak"],
-            "nama" => $body["nama"],
-            "no_telp" => $body["nomor_telepon"],
-            "jumlah_saksi" => $body["jumlah_saksi"] ?? 0,
-        ];
-        try {
-            PihakMenghadirkan::create($form);
+    // public function add(Request $request): JsonResponse {
+    //     // $body = $request->all();
+    //     // $form = [
+    //     //     "no_perkara"=> $body["no_perkara"],
+    //     //     "jenis_perdata" => $body["jenis_perdata"],
+    //     //     "pihak" => $body["pihak"],
+    //     //     "nama" => $body["nama"],
+    //     //     "no_telp" => $body["nomor_telepon"],
+    //     //     "jumlah_saksi" => $body["jumlah_saksi"] ?? 0,
+    //     // ];
+    //     // try {
+    //     //     PihakMenghadirkan::create($form);
     
-            return redirect()->back()->with('success', 'Data berhasil disimpan.');
+    //     //     return redirect()->back()->with('success', 'Data berhasil disimpan.');
+    //     // } catch (ValidationException $e) {
+    //     //     return redirect()->back()->withErrors($e->errors())->withInput();
+    //     // } catch (\Exception $e) {
+    //     //     return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     // }
+    //     $rules = [
+    //         'no_perkara' => 'required|string',
+    //         'jenis_perdata' => 'required|string',
+    //         'pihak' => 'required|string',
+    //         'nama' => 'required|string',
+    //         'nomor_telepon' => 'required|string',
+    //         'rows' => 'nullable|array',
+    //         'rows.*.nama' => 'required|string',
+    //         'rows.*.telepon' => 'required|string',
+    //         'rows.*.saksi' => 'nullable|integer|min:0',
+    //     ];
+        
+    //     $validated = $request->validate($rules);
+        
+    //     // Ambil nilai utama
+    //     $data = collect($validated)->except('rows')->toArray();
+        
+    //     // Loop untuk memproses `rows` jika ada
+    //     $data['rows'] = isset($validated['rows']) ? array_map(function ($row) use ($data) {
+    //         return array_merge($data, $row); // Gabungkan nilai utama dengan setiap row
+    //     }, $validated['rows']) : [];
+
+        
+    //     // try {
+    //     //     // Simpan data utama
+    //     //     $pihak = PihakMenghadirkan::create([
+    //     //         'no_perkara' => $request->no_perkara,
+    //     //         'jenis_perdata' => $request->jenis_perdata,
+    //     //         'pihak' => $request->pihak,
+    //     //         'nama' => $request->nama,
+    //     //         'no_telp' => $request->nomor_telepon,
+    //     //         'jumlah_saksi' => $request->input('jumlah_saksi', 0),
+    //     //     ]);
+            
+    //     //     // Simpan data saksi jika ada
+    //     //     if ($request->has('rows')) {
+    //     //         foreach ($request->rows as $row) {
+    //     //             $pihak->saksi()->create([
+    //     //                 'nama' => $row['nama'],
+    //     //                 'telepon' => $row['telepon'],
+    //     //                 'jumlah_saksi' => $row['saksi'] ?? 0,
+    //     //             ]);
+    //     //         }
+    //     //     }
+            
+    //     //     return redirect()->back()->with('success', 'Data berhasil disimpan.');
+    //     // } catch (ValidationException $e) {
+    //     //     return redirect()->back()->withErrors($e->errors())->withInput();
+    //     // } catch (\Exception $e) {
+    //     //     return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     // }
+
+
+    //     return response()->json($data, 200);
+    // }
+
+    public function add(Request $request): JsonResponse {
+        try {
+            $body = $request->all();
+            $form = [];
+    
+            foreach ($body["rows"] as $row) {
+                $form[] = [
+                    "no_perkara" => $body["no_perkara"],
+                    'jenis_perdata' => $body["jenis_perdata"],
+                    'pihak' => $body["pihak"],
+                    'nama' => $row["nama"],
+                    'no_telp' => $row["telepon"],
+                    'jumlah_saksi' => $row["saksi"],
+                ];
+            }
+    
+            PihakMenghadirkan::insert($form); // insert untuk multiple records
+    
+            return response()->json($form, 200);
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return response()->json(['errors' => $e->errors()], 422);
         }
-
-
-        // return response()->json($form, 200);
     }
+
 
     public function destroy($id): RedirectResponse {
         $perkara = PihakMenghadirkan::findOrFail($id);
