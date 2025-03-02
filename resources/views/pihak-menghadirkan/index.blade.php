@@ -255,7 +255,7 @@
         <!-- Create Dialog -->
         <div class="fixed inset-0 flex justify-center bg-gray-400/20 pt-20 z-10" x-show="create" :class="{ 'hidden': !create }" x-transition>
             <div class="w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl max-h-min" @click.outside="create=false">
-                <h4>Test Create Pihak</h4>
+                <h4>Tambahkan Pihak</h4>
                 <form 
                     action="{{ route('pihak-menghadirkan.form') }}" 
                     method="POST" 
