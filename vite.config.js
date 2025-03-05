@@ -15,7 +15,7 @@ export default defineConfig({
         strictPort: true,
         https: true,  // **Pastikan Vite pakai HTTPS**
         hmr: {
-            host: 'e-saksi.jasakode.com'
+            host: 'esaksi-pn-calang.web.id'
         }
     },
     base: process.env.APP_URL + "/build/",
