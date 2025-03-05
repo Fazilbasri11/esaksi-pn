@@ -34,6 +34,9 @@
                                 Jenis Perdata
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Nomor Perkara
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Pihak
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -57,6 +60,7 @@
                         @foreach ($pihaks as $index => $pihak)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                             <td class="px-6 py-3">{{ ucfirst($pihak['jenis_perdata']) }}</td>
+                            <td class="px-6 py-3">{{ $pihak['no_perkara'] }}</td>
                             <td class="px-6 py-3">{{ ucfirst($pihak['pihak']) }}</td>
                             <td class="px-6 py-3">{{ $pihak['nama'] }}</td>
                             <td class="px-6 py-3">{{ $pihak['no_telp'] }}</td>
@@ -284,6 +288,18 @@
                     @csrf
                     <section>
                         <div>
+                            <label for="jenis_perdata" class="flex mb-0.5">Jenis Perkara</label>
+                            <template x-if="errors?.jenis_perdata">
+                                <p class="text-red-500 text-sm mb-1" x-text="errors?.jenis_perdata"></p>
+                            </template>
+                            <select class="custom-select w-full" id="jenis_perdata" name="jenis_perdata" x-model="jenis_perdata">
+                                <option selected hidden value="">Pilih Jenis Perdata...</option>
+                                <option value="gugatan">Gugatan</option> 
+                                <option value="gugatan_sederhana">Gugatan Sederhana</option> 
+                                <option value="permohonan">Permohonan</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
                             <template x-if="errors?.no_perkara">
                                 <p class="text-red-500 text-sm mb-1" x-text="errors?.no_perkara"></p>
@@ -295,18 +311,6 @@
                                 <option value="{{ $perkara->no }}">{{ $perkara->no }}</option> 
                                 @endforeach
                                 @endif
-                            </select>
-                        </div>
-                        <div>
-                            <label for="jenis_perdata" class="flex mb-0.5">Jenis Perkara</label>
-                            <template x-if="errors?.jenis_perdata">
-                                <p class="text-red-500 text-sm mb-1" x-text="errors?.jenis_perdata"></p>
-                            </template>
-                            <select class="custom-select w-full" id="jenis_perdata" name="jenis_perdata" x-model="jenis_perdata">
-                                <option selected hidden value="">Pilih Jenis Perdata...</option>
-                                <option value="gugatan">Gugatan</option> 
-                                <option value="gugatan_sederhana">Gugatan Sederhana</option> 
-                                <option value="permohonan">Permohonan</option>
                             </select>
                         </div>
                         <div>

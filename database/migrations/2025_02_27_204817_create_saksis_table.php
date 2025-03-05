@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('saksis', function (Blueprint $table) {
             $table->id();
+            $table->integer('pihak_id')->nullable();
             $table->timestamps();
             $table->enum('agenda', ['perdata', 'biasa']);
             $table->enum('jenis_pidana', ['perdata', 'pidana']);

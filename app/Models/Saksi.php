@@ -13,6 +13,7 @@ class Saksi extends Model
 
     protected $fillable = [
         "agenda",
+        "pihak_id",
         'jenis_pidana',
         'no_perkara',
         'pihak_menghadirkan',

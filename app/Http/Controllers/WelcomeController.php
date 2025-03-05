@@ -50,6 +50,7 @@ class WelcomeController extends Controller {
     
             foreach ($body["rows"] as $row) {
                 $form[] = [
+                    "pihak_id" => intval($body["pihak_dari"] ?? "0"),
                     'jenis_pidana' => $body["jenis_pidana"],
                     'no_perkara'=> $body["no_perkara"],
                     'pihak_menghadirkan'=> $body["pihak_menghadirkan"],
@@ -59,7 +60,7 @@ class WelcomeController extends Controller {
                     'nomor_telepon' => $row["telepon"],
                 ];
             }
-            Saksi::insert($form); // insert untuk multiple records
+            // Saksi::insert($form); // insert untuk multiple records
             return response()->json($form, 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
@@ -85,12 +86,11 @@ class WelcomeController extends Controller {
     }
 
     public function findPihak(Request $request) : JsonResponse {
-        $jenisPerkara = $request->query('jenis_perkara') ?? "";
+        $jenis_perdata = $request->query('jenis_perdata') ?? "";
         $noPerkara = $request->query('no_perkara') ?? "";
       
-        if ($jenisPerkara != "" && $noPerkara != "") {
+        if ($jenis_perdata != "" || $noPerkara != "") {
             $pihaks = PihakMenghadirkan::where("no_perkara", $noPerkara)->where("hadir", false)->get();
-            // return response()->json([ "data:" => PihakMenghadirkan::all(),"pihaks" => $pihaks, "jenis_perkara" => $jenisPerkara, "no_perkara" => $noPerkara ]);
             return response()->json($pihaks);
         }
 

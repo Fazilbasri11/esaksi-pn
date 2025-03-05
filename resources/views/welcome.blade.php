@@ -1,5 +1,7 @@
 
 <x-guest-layout>
+
+
     @if (Route::has('login'))
         <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
             @auth
@@ -13,9 +15,21 @@
         </div>
     @endif
 
+
+@if(session('success'))
+    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="bg-green-500 text-white p-3 rounded mb-3">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="bg-red-500 text-white p-3 rounded mb-3">
+        {{ session('error') }}
+    </div>
+@endif
+
 <script>
     function submitFormData(id) {
-        console.clear();
         const form = document.querySelector("#"+id);
         const action = form.action || ""; 
         if (form) {
@@ -81,7 +95,9 @@
             }).then(res => {
                 if (res.status >= 200 && res.status < 300) { 
                     window.location.reload();
-                    // console.log(dataForm);
+                    // console.log(res);
+                } else {
+                    console.log(res)
                 }
             }).catch(error => {
                 alert("Terjadi kesalahan: " + error.message);
@@ -99,17 +115,19 @@
             tanggal: "",
             perkaras: [],
             rows: [],
-            optionsPidana: [
-                { value: 'jaksa', label: 'Jaksa' },
-                { value: 'terdakwa', label: 'Terdakwa' },
-                { value: 'pengacara', label: 'Pengacara' },
-                { value: 'jaksa_dan_terdakwa', label: 'Jaksa dan Terdakwa' }
+            options_pihak_menghadirkan: [],
+            pihaks: [],
+            options_pihak_dari: [],
+            opts_pihak_menghadirkan_perdata: [
+                { value: "penggugat", label: "Penggugat" },
+                { value: "tergugat", label: "Tergugat" },
+                { value: "turut_tergugat", label: "Turut Tergugat" },
+                { value: "pemohon", label: "Pemohon" },
             ],
-            optionsPerdata: [
-                { value: 'penggugat', label: 'Penggugat' },
-                { value: 'tergugat', label: 'Tergugat' },
-                { value: 'turut_tergugat', label: 'Turut Tergugat' },
-                { value: 'pemohon', label: 'Pemohon' }
+            opts_pihak_menghadirkan_pidana: [
+                { value: "jaksa", label: "Jaksa" },
+                { value: "terdakwa", label: "Terdakwa" },
+                { value: "jaksa_dan_terdakwa", label: "Jaksa dan Terdakwa" }
             ],
             errors: {},
             submitForm() {
@@ -128,18 +146,33 @@
                     .then(res => res.json())
                     .then(data => {
                         this.perkaras = data;
+
+                        if(this.jenis === 'pidana'){
+                            this.options_pihak_menghadirkan = this.opts_pihak_menghadirkan_pidana;
+                            this.pihaks = [
+                                { value: "saksi", label: "Saksi" },
+                                { value: "saksi_anak", label: "Saksi Anak" },
+                                { value: "ahli", label: "Ahli" },
+                            ];
+                        } else if(this.jenis === 'perdata'){
+                            this.options_pihak_menghadirkan = this.opts_pihak_menghadirkan_perdata;
+                            this.pihaks = [
+                                { value: "saksi", label: "Saksi" },
+                                { value: "ahli", label: "Ahli" },
+                            ];
+                        };
                     })
                     .catch(err => console.error('Gagal memuat data:', err));
             },
-            // Fungsi untuk mendapatkan opsi berdasarkan jenis_pidana
-            getOptions() {
-                if(this.jenis_pidana === 'pidana'){
-                    return this.optionsPidana;
-                } else if(this.jenis_pidana === 'perdata'){
-                    return this.optionsPerdata;
-                }
-                return [];
-            },
+            fetchPihak() {
+                fetch(`/api/v1/pihak?no_perkara=${this.no_perkara}`)
+                .then(res => res.json())
+                .then(data => {
+                    const pihak_dari = data.map((item, i) => ({ value: item.id, label: `${item.nama} (${item.pihak} ${i+1})` }));
+                    this.options_pihak_dari = pihak_dari;
+                })
+                .catch(err => console.error('Gagal memuat data:', err));
+            }
         };
     }
 
@@ -161,16 +194,31 @@
                 fetch(`/api/v1/pihak?jenis_perkara=${this.jenis_pidana}&no_perkara=${this.no_perkara}`)
                     .then(res => res.json())
                     .then(data => {
-                        if(data && data.length >0) {
-                            this.pihaks = data.map(item => ({
-                                label: `${item.pihak.charAt(0).toUpperCase() + item.pihak.slice(1)} (${item.nama} ${item.no_telp})`,
-                                value: item.id.toString(),
-                            }))
+                        if(this.jenis_pidana == "pidana") {
+                            this.pihaks = [
+                                { value: "jaksa", label: "Jaksa" },
+                                { value: "terdakwa", label: "Terdakwa" },
+                                { value: "jaksa_dan_terdakwa", label: "Jaksa dan Terdakwa" }
+                            ];
+                        } else if(this.jenis_pidana == "perdata") {
+                            this.pihaks = [
+                                { value: "penggugat", label: "Penggugat" },
+                                { value: "tergugat", label: "Tergugat" },
+                                { value: "turut_tergugat", label: "Turut Tergugat" },
+                                { value: "pemohon", label: "Pemohon" }
+                            ];
                         }
+                        // if(data && data.length >0) {
+                        //     this.pihaks = data.map(item => ({
+                        //         label: `${item.pihak.charAt(0).toUpperCase() + item.pihak.slice(1)} (${item.nama} ${item.no_telp})`,
+                        //         value: item.id.toString(),
+                        //     }))
+                        // }
                     })
                     .catch(err => console.error('Gagal memuat data:', err));
             },
         }
+        
     }
 
     function hadiriAgendaBiasa(id) {
@@ -280,8 +328,8 @@
                     <select class="custom-select w-full" id="jenis" name="jenis" x-model="jenis"
                         x-on:change="fetchData()">
                         <option selected hidden value="">Pilih Jenis Perkara</option>
-                        <option value="perdata">Perdata</option>
                         <option value="pidana">Pidana</option>
+                        <option value="perdata">Perdata</option>
                     </select>
                 </div>
                 <div>
@@ -301,14 +349,29 @@
                     <template x-if="errors?.pihak_menghadirkan">
                         <p class="text-red-500 text-sm mb-1" x-text="errors?.pihak_menghadirkan"></p>
                     </template>
-                    <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="pihak_menghadirkan">
+                    <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="pihak_menghadirkan" x-on:change="fetchPihak()">
                         <option selected hidden value="">Pilih Pihak Yang Menghadirkan...</option>
-                        <option value="penggugat">Penggugat</option>
-                        <option value="tergugat">Tergugat</option>
-                        <option value="turut_tergugat">Turut Tergugat</option>
-                        <option value="pemohon">Pemohon</option>
+                        <template x-for="pihak_menghadirkan in options_pihak_menghadirkan" :key="pihak_menghadirkan.value">
+                            <option :value="pihak_menghadirkan.value" x-text="pihak_menghadirkan.label"></option>
+                        </template>
                     </select>
                 </div>
+
+                <div>
+                    <label for="pihak_menghadirkan" class="flex mb-0.5">Pihak Dari</label>
+                    <template x-if="errors?.pihak_menghadirkan">
+                        <p class="text-red-500 text-sm mb-1" x-text="errors?.pihak_menghadirkan"></p>
+                    </template>
+                    <select class="custom-select w-full mt-2" id="pihak_dari" name="pihak_dari" x-model="pihak_dari">
+                        <option selected hidden value="">Pilih Pihak...</option>
+                        <template x-for="pihak_dari in options_pihak_dari" :key="pihak_dari.value">
+                            <option :value="pihak_dari.value" x-text="pihak_dari.label"></option>
+                        </template>
+                    </select>
+                </div>
+
+                
+
                 <div>
                     <label for="pihak" class="flex mb-0.5">Pihak</label>
                     <template x-if="errors?.pihak">
@@ -316,9 +379,9 @@
                     </template>
                     <select class="custom-select w-full" id="pihak" name="pihak" x-model="pihak">
                         <option selected value="" hidden>Pilih Pihak...</option>
-                        <option value="saksi">Saksi</option>
-                        <option value="saksi_anak">Saksi Anak</option>
-                        <option selected value="ahli">Ahli</option>
+                        <template x-for="pihak in pihaks" :key="pihak.value">
+                            <option :value="pihak.value" x-text="pihak.label"></option>
+                        </template>
                     </select>
                 </div>
                 <div>
@@ -414,14 +477,14 @@
                 class="flex flex-col gap-3"
                 x-on:submit.prevent="hadiriAgendaBiasa('form-agenda-biasa')">
                 @csrf
-                <div x-data="perkaraBiasaStore()" class="flex flex-col gap-3">
+                <div class="flex flex-col gap-3">
                     <div>
                         <label for="jenis_pidana" class="flex mb-0.5">Jenis Perkara</label>
                         <select class="custom-select w-full" id="jenis_pidana" name="jenis_pidana" x-model="jenis_pidana"
                             x-on:change="fetchData()">
                             <option selected hidden value="">Pilih Jenis Pidana</option>
-                            <option value="perdata">Perdata</option>
                             <option value="pidana">Pidana</option>
+                            <option value="perdata">Perdata</option>
                         </select>
                     </div>
                     <div>
@@ -434,8 +497,6 @@
                             </template>
                         </select>
                     </div>
-
-                    
                     <div>
                         <label for="pihak_menghadirkan" class="flex mb-0.5">Pihak Yang Hadir</label>
                         <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="jenis">
