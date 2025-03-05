@@ -31,7 +31,12 @@ Route::get('/agenda-saksi-perdata', [AgendaSaksiPerdataController::class, 'index
 Route::get('/agenda-saksi-pidana', [AgendaSaksiPidanaController::class, 'index'])->name('agenda-saksi-pidana');
 Route::get('/agenda-biasa', [AgendaBiasaController::class, 'index'])->name('agenda-biasa');
 
+Route::post('/agenda-biasa', [WelcomeController::class, 'agendaBiasaAdd'])->name('agenda-biasa.add');
+
+
 Route::patch('/agenda-biasa/hadir/{id}', [WelcomeController::class, 'agendaBiasPihakHadir'])->name('agenda-biasa.hadir');
+
+Route::post('/agenda-saksi/add', [WelcomeController::class, 'addSaksi'])->name('agenda-saksi.add');
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');

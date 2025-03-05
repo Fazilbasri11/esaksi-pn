@@ -20,8 +20,9 @@ class DashboardController extends Controller {
     /**
      * 
      */
-    public function index() {
-    
+    public function index(Request $request) {
+        $jsonRespone = $request->query('json') == "true"; // Ambil nil
+
         $perkaras = Perkara::where("status", true)->get();
 
         foreach ($perkaras as $key => $perkara) {
@@ -45,28 +46,35 @@ class DashboardController extends Controller {
                     "termohon" => null,
                 ];
                 if (isset($data["tergugat"][$i]) && $data["tergugat"][$i] !== null) {
-                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_menghadirkan", "tergugat")->get()->all();
-                    $child["tergugat"] = $data["tergugat"][$i];
+                    $dataChild = $data["tergugat"][$i];
+                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_id", $dataChild["id"])->where("pihak_menghadirkan", "tergugat")->get()->all();
+                    $child["tergugat"] = $dataChild;
                     $child["tergugat"]["saksi"] = $saksi;
                 }
                 if (isset($data["penggugat"][$i]) && $data["penggugat"][$i] !== null) {
-                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_menghadirkan", "penggugat")->get()->all();
-                    $child["penggugat"] = $data["penggugat"][$i];
+                    $dataChild = $data["penggugat"][$i];
+                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_id", $dataChild["id"])->where("pihak_menghadirkan", "penggugat")->get()->all();
+                    $child["penggugat"] = $dataChild;
                     $child["penggugat"]["saksi"] = $saksi;
+
+                    
                 }
                 if (isset($data["turut_tergugat"][$i]) && $data["turut_tergugat"][$i] !== null) {
-                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_menghadirkan", "turut_tergugat")->get()->all();
-                    $child["turut_tergugat"] = $data["turut_tergugat"][$i];
+                    $dataChild = $data["turut_tergugat"][$i];
+                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_id", $dataChild["id"])->where("pihak_menghadirkan", "turut_tergugat")->get()->all();
+                    $child["turut_tergugat"] = $dataChild;
                     $child["turut_tergugat"]["saksi"] = $saksi;
                 }
                 if (isset($data["pemohon"][$i]) && $data["pemohon"][$i] !== null) {
-                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_menghadirkan", "pemohon")->get()->all();
-                    $child["pemohon"] = $data["pemohon"][$i];
+                    $dataChild = $data["turut_tergugat"][$i];
+                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_id", $dataChild["id"])->where("pihak_menghadirkan", "pemohon")->get()->all();
+                    $child["pemohon"] = $dataChild;
                     $child["turut_tergugat"]["saksi"] = $saksi;
                 }
                 if (isset($data["termohon"][$i]) && $data["termohon"][$i] !== null) {
-                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_menghadirkan", "termohon")->get()->all();
-                    $child["termohon"] = $data["termohon"][$i];
+                    $dataChild = $data["turut_tergugat"][$i];
+                    $saksi = Saksi::where("no_perkara", $perkara->no)->where("pihak_id", $dataChild["id"])->where("pihak_menghadirkan", "termohon")->get()->all();
+                    $child["termohon"] = $dataChild;
                     $child["termohon"]["saksi"] = $saksi;
                 }
                 $pihak->push($child);
@@ -76,8 +84,16 @@ class DashboardController extends Controller {
         }
 
         // return response()->json(["perkaras"=> $perkaras]);
-    
-        return view('dashboard', ["perkaras"=> $perkaras]);
+
+        $respon = [
+            "perkaras"=> $perkaras,
+            // "saksi" => Saksi::all(),
+        ];
+
+        if($jsonRespone) {
+            return response()->json($respon, 200);
+        }
+        return view('dashboard', $respon);
     }
 
     /**

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('jenis');
             $table->string('no');
             $table->boolean('status')->default(true);
+            $table->boolean('jaksa_hadir')->default(false);
+            $table->boolean('terdakwa_hadir')->default(false);
             $table->timestamps();
         });
     }

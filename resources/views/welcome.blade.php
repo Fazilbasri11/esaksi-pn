@@ -92,13 +92,16 @@
                 },
                 body: JSON.stringify(dataForm),
                 credentials: "include",
-            }).then(res => {
-                if (res.status >= 200 && res.status < 300) { 
-                    window.location.reload();
-                    // console.log(res);
-                } else {
-                    console.log(res)
-                }
+            }).the(res => res.json()).then(res => {
+                console.log(res)
+
+                // if (res.status >= 200 && res.status < 300) { 
+                //     console.log(res)
+                //     // window.location.reload();
+                //     // console.log(res);
+                // } else {
+                //     console.log(res)
+                // }
             }).catch(error => {
                 alert("Terjadi kesalahan: " + error.message);
             });
@@ -165,10 +168,27 @@
                     .catch(err => console.error('Gagal memuat data:', err));
             },
             fetchPihak() {
-                fetch(`/api/v1/pihak?no_perkara=${this.no_perkara}`)
+                fetch(`/api/v1/pihak?no_perkara=${this.no_perkara}&pihak=${this.pihak_menghadirkan}`)
                 .then(res => res.json())
                 .then(data => {
-                    const pihak_dari = data.map((item, i) => ({ value: item.id, label: `${item.nama} (${item.pihak} ${i+1})` }));
+                    const countIndex = {
+                        penggugat: 0,
+                        tergugat: 0,
+                        turut_tergugat: 0,
+                        pemohon: 0,
+                        jaksa: 0,
+                        terdakwa: 0,
+                        jaksa_dan_terdakwa: 0,
+                    };
+
+                    const pihak_dari = data.map((item, i) => {
+                        countIndex[item.pihak] += 1;
+                        const data = { 
+                            value: item.id, 
+                            label: `${item.nama} (${item.pihak} ${countIndex[item.pihak]})` 
+                        };
+                        return data;
+                    });
                     this.options_pihak_dari = pihak_dari;
                 })
                 .catch(err => console.error('Gagal memuat data:', err));
@@ -179,22 +199,14 @@
     function perkaraBiasaStore() {
         return {
             jenis_pidana: "",
-            perkaras: [],
             no_perkara: "",
+            pihak_menghadirkan: "",
+            pihak_hadir: "",
             pihaks: [],
+            perkaras: [],
+            pihak_detail: [],
             fetchData() {
-                fetch(`/api/v1/perkara?jenis_pidana=${this.jenis_pidana}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        this.perkaras = data;
-                    })
-                    .catch(err => console.error('Gagal memuat data:', err));
-            },
-            fetchDataPihak() {
-                fetch(`/api/v1/pihak?jenis_perkara=${this.jenis_pidana}&no_perkara=${this.no_perkara}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(this.jenis_pidana == "pidana") {
+                if(this.jenis_pidana == "pidana") {
                             this.pihaks = [
                                 { value: "jaksa", label: "Jaksa" },
                                 { value: "terdakwa", label: "Terdakwa" },
@@ -207,13 +219,36 @@
                                 { value: "turut_tergugat", label: "Turut Tergugat" },
                                 { value: "pemohon", label: "Pemohon" }
                             ];
-                        }
-                        // if(data && data.length >0) {
-                        //     this.pihaks = data.map(item => ({
-                        //         label: `${item.pihak.charAt(0).toUpperCase() + item.pihak.slice(1)} (${item.nama} ${item.no_telp})`,
-                        //         value: item.id.toString(),
-                        //     }))
-                        // }
+                };
+                fetch(`/api/v1/perkara?jenis_pidana=${this.jenis_pidana}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        this.perkaras = data;
+                    })
+                    .catch(err => console.error('Gagal memuat data:', err));
+            },
+            fetchDataPihakHadir() {
+                fetch(`/api/v1/pihak?no_perkara=${this.no_perkara}&pihak=${this.pihak_menghadirkan}`)
+                    .then(res => res.json())
+                    .then(data => {    
+                        const countIndex = {
+                            penggugat: 0,
+                            tergugat: 0,
+                            turut_tergugat: 0,
+                            pemohon: 0,
+                            jaksa: 0,
+                            terdakwa: 0,
+                            jaksa_dan_terdakwa: 0,
+                        };
+                        const pihak_detail = data.map((item, i) => {
+                            countIndex[item.pihak] += 1;
+                            const data = { 
+                                value: item.id, 
+                                label: `${item.nama} (${item.pihak} ${countIndex[item.pihak]})` 
+                            };
+                            return data;
+                        });
+                        this.pihak_detail = pihak_detail;
                     })
                     .catch(err => console.error('Gagal memuat data:', err));
             },
@@ -279,7 +314,7 @@
     <section class="container my-5 min-h-screen">
         <h1 class="text-center mb-2">Selamat Data Di E-Saksi</h1>
         <p class="text-center mb-8">Silahkan Pilih Agenda</p>
-        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 sm:gap-2 xs:gap-2 lg:gap-8 xl:gap-8 2xl:gap-8">
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="shadow-xl px-4 py-4 border border-gray-200/10 rounded-md flex flex-col h-full">
                 <h5 class="card-title fw-semibold text-center mb-4">Agenda Saksi</h5>
                 <p class="card-text text-center mb-4 flex-grow">
@@ -312,11 +347,11 @@
             <h2 class="text-2xl font-semibold mb-4">Informasi Pihak</h2>
             <form 
                 class="flex flex-col gap-2"
-                action="{{ route('saksi-perdata.add') }}" 
+                action="{{ route('agenda-saksi.add') }}" 
                 method="POST" 
                 id="form-create"
                 x-data="perkaraStore()"
-                x-on:submit.prevent="submitForm()"
+           
             >
                 @csrf
                 <input type="text" name="agenda" value="perdata" hidden>
@@ -471,11 +506,11 @@
     <section class="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-gray-400/20 md:pt-24 z-20 overflow-auto py-20 md:py-0" x-show="agenda_biasa" x-transition>
         <div class="w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%] min-w-[300px] px-4 py-4 bg-white shadow-xl min-h-max md:max-h-max rounded- mb-20 md:mb-0 overflow-visible"  @click.outside="agenda_biasa=false">
             <h2 class="text-2xl font-semibold mb-4">Informasi Pihak Agenda Biasa</h2>
-            <form action="{{ route('saksi-perdata.add') }}" method="POST" 
+            <form action="{{ route('agenda-biasa.add') }}" method="POST" 
                 id="form-agenda-biasa"
                 x-data="perkaraBiasaStore()" 
                 class="flex flex-col gap-3"
-                x-on:submit.prevent="hadiriAgendaBiasa('form-agenda-biasa')">
+            >
                 @csrf
                 <div class="flex flex-col gap-3">
                     <div>
@@ -489,8 +524,7 @@
                     </div>
                     <div>
                         <label for="no_perkara" class="flex mb-0.5">Nomor Perkara</label>
-                        <select class="custom-select w-full" id="no_perkara" name="no_perkara" x-model="no_perkara"
-                        x-on:change="fetchDataPihak()">
+                        <select class="custom-select w-full" id="no_perkara" name="no_perkara" x-model="no_perkara">
                             <option selected hidden>Pilih Nomor Perkara</option>
                             <template x-for="perkara in perkaras" :key="perkara.no">
                                 <option :value="perkara.no" x-text="perkara.no"></option>
@@ -498,10 +532,20 @@
                         </select>
                     </div>
                     <div>
-                        <label for="pihak_menghadirkan" class="flex mb-0.5">Pihak Yang Hadir</label>
-                        <select class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="jenis">
+                        <label for="pihak_menghadirkan" class="flex mb-0.5" x-show="jenis_pidana=='perdata'">Jenis Pihak</label>
+                        <label for="pihak_menghadirkan" class="flex mb-0.5" x-show="jenis_pidana=='pidana'">Pihak Yang Hadir</label>
+                        <select x-on:change="fetchDataPihakHadir()" class="custom-select w-full" id="pihak_menghadirkan" name="pihak_menghadirkan" x-model="pihak_menghadirkan">
                             <option selected hidden value="">Pilih Pihak Menghadirkan</option>
                             <template x-for="option in pihaks" :key="option.value">
+                                <option :value="option.value" x-text="option.label"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div x-show="jenis_pidana=='perdata'">
+                        <label for="pihak_hadir" class="flex mb-0.5">Pihak Yang Hadir</label>
+                        <select class="custom-select w-full" id="pihak_hadir" name="pihak_hadir" x-model="pihak_hadir">
+                            <option selected hidden value="">Pilih Pihak</option>
+                            <template x-for="option in pihak_detail" :key="option.value">
                                 <option :value="option.value" x-text="option.label"></option>
                             </template>
                         </select>

@@ -19,5 +19,8 @@ class Perkara extends Model
         'jenis',
         'no',
         'status',
+        'jaksa_hadir',
+        'terdakwa_hadir'
     ];
 }
+

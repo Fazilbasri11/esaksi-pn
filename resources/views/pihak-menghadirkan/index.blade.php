@@ -79,7 +79,7 @@
                         @endforeach
                     @else
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                            <th colspan="6">
+                            <th colspan="7">
                                 <div class="flex flex-col items-center justify-center w-full py-10">
                                     <div class="flex items-center justify-center mb-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 1024 1024">

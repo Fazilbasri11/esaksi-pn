@@ -49,6 +49,7 @@
         </nav>
 
 
+      
         
 
         <!-- DATA -->
@@ -92,6 +93,18 @@
                                                 @endif
                                             </td>
                                         </tr>
+                                        @if ($perkara->jenis == 'pidana')
+                                            <tr>
+                                                <td>
+                                                    <span>Jaksa ({{ $perkara->jaksa_hadir ? 'Hadir' : 'Belum Hadir' }})</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Terdakwa ({{ $perkara->terdakwa_hadir ? 'Hadir' : 'Belum Hadir' }})</span>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                                 <nav class="flex md:justify-end gap-2">
